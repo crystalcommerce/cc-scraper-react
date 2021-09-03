@@ -1,0 +1,8 @@
+@import "../../shared/assets/css/_variables";
+@import "../../shared/assets/css/mixins";
+.select {
+    & > *   {
+        font-size : 1rem;
+    }
+    
+}

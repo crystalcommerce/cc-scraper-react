@@ -1,0 +1,35 @@
+@import "../../shared/assets/css/_variables";
+@import "../../shared/assets/css/mixins";
+.nav {
+    & > ul  {
+        & > li  {
+            & > a   {
+                display : block;
+                padding : .25rem .34rem;
+                &.active-parent  {
+                    color: lighten(#116882, 10);
+                    background-color : lightblue;
+                }
+            }
+            & > ul  {
+                padding : .25rem .7rem;
+                & > li  {
+                    & > a   {
+                        display : block;
+                        padding : .25rem .34rem;
+                        &.active-child  {
+                            color : white;
+                            &:hover {
+                                color : white;
+                            }
+                            background-color : rgb(85, 185, 185);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    ul  {
+        padding : .5rem;
+    }
+}

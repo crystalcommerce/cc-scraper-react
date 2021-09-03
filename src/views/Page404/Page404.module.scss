@@ -1,0 +1,11 @@
+.page404-container  {
+    display : flex;
+    min-height: calc(100vh - 250px);
+    width : 100%;
+    align-items: center;
+    justify-content: center;
+    .page404-error  {
+        color : rgb(172, 73, 73);
+        font-weight : bold;
+    }
+}

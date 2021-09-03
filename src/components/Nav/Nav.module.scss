@@ -1,0 +1,26 @@
+@import "../../shared/assets/css/_variables";
+@import "../../shared/assets/css/mixins";
+.nav {
+    padding : 10px;
+    display : flex;
+    flex-direction : column;
+    & > ul  {
+        & > li  {
+            display : block;
+            & > a   {
+                @include linkText($font-size-sm);
+            }
+            & > ul  {
+                & > li  {
+                    display : block;
+                    & > a   {
+                        @include linkText($font-size-xs);
+                    }
+                }
+            }
+        }
+    }
+    ul  {
+        padding : .5rem;
+    }
+}

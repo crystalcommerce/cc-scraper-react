@@ -1,0 +1,133 @@
+{
+    "siteResource" : {
+        "siteName" : "TCG Player",
+        "siteUrl" : "https://www.tcgplayer.com/"
+    },
+    "usage" : "Please take the starting point URL from the Price Guide website of TCG.",
+    "productBrand" : "Flesh and Blood",
+    "imagePropName" : "productImage",
+    "imageNameObject" : {
+        "split" : ["cardName", "cardNumber"],
+        "shared" : ["rarity"]
+    },
+    "csvExcludedProps" : ["imageUris", "cardUri"],
+
+    "modelObjectOptions" : {
+        "schema" : {
+            "productName" : {
+                "type" : "String",
+                "required" : "true"
+            },
+            "productImage" : {
+                "type" : "String",
+                "required" : "false"
+            },
+            "cardEffect" : {
+                "type" : "String",
+                "required" : "false"
+            },
+
+            "cardName" : {
+                "type" : "String",
+                "required" : "false"
+            },
+            "cardNumber" : {
+                "type" : "String",
+                "required" : "false"
+            },
+            "cardType" : {
+                "type" : "String",
+                "required" : "false"
+            },
+            "cardSubtype" : {
+                "type" : "String",
+                "required" : "false"
+            },
+            "class" : {
+                "type" : "String",
+                "required" : "false"
+            },
+            "cost" : {
+                "type" : "String",
+                "required" : "false"
+            },
+            "defenseValue" : {
+                "type" : "String",
+                "required" : "false"
+            },
+            "finish" : {
+                "type" : "String",
+                "required" : "false"
+            },
+            "intellect" : {
+                "type" : "String",
+                "required" : "false"
+            },
+            "life" : {
+                "type" : "String",
+                "required" : "false"
+            },
+            "pitchValue" : {
+                "type" : "String",
+                "required" : "false"
+            },
+            "power" : {
+                "type" : "String",
+                "required" : "false"
+            },
+            "rarity" : {
+                "type" : "String",
+                "required" : "false"
+            },
+            "setName" : {
+                "type" : "String",
+                "required" : "false"
+            },
+            "edition" : {
+                "type" : "String",
+                "required" : "false"
+            },
+
+            "multiFaced" : {
+                "type" : "Boolean",
+                "required" : "false"
+            },
+            "imageUris" : {
+                "type" : "Array",
+                "required" : "true"
+            },
+            "imagePaths" : {
+                "type" : "Array",
+                "required" : "true"
+            },
+            "cardUri" : {
+                "type" : "String",
+                "required" : "true"
+            }
+        }, 
+        "initializedProps" : [
+            { "friendlyUrlProps" : ["cardName", "cardNumber"] },
+            { "immutableProps" : ["_id", "dateCreated"] },
+            { "uniqueProps" : ["_id","cardUri"] }
+        ]
+    },
+    "routeObjectOptions" : {
+        "recordName" : "Flesh and Blood TCG",
+        "pluralized" : false
+    },
+    "evaluatorObjects" : [
+        {
+            "callback" : "function (setName) {\n\n    return Array.from(document.querySelectorAll(\".priceGuideTable tbody tr\"))\n        .map(item => {\n\n            let cardName = `${item.querySelector(\"td:first-child\").innerText.trim()}`,\n                multiFaced = cardName.includes(\" // \") ? true : false,\n                cardUri = item.querySelector(\"td:first-child .productDetail a\").href + \"?Language=English\";\n\n            return {    \n                productName : null,\n                productImage : '',\n                cardEffect : null,  \n                cardName,\n                cardNumber : null,\n                cardType : null,\n                cardSubtype : null,\n                class : null,\n                cost : null,\n                defenseValue : null,\n                finish : \"Regular\",\n                intellect : null,\n                life : null,\n                pitchValue : null,\n                power : null,\n                rarity : null,\n                setName,\n                edition : null,\n\n                multiFaced,\n                imageUris : [],\n                cardUri,\n            };\n        });\n\n}",
+            "waitMethods" : [],
+            "type" : "list",
+            "paginated" : false
+        },
+        {
+            "callback" : "function (multiFaced, cardName) {\n\n    function toCapitalize(str)  {\n        return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;\n    }\n\n    function toCamelCase(str, url=false, initialCap=false)  {\n        let separator = url ? \"-\" : \" \";\n        return str.toLowerCase().split(`${separator}`).map((item, index) => index === 0 && !initialCap ? item : toCapitalize(item)).join(\"\");\n    }\n\n    function getObject(item)    {\n        let object = {},\n            key = item.querySelector(\"strong\").innerText.trim().replace(/:/g, \"\"),\n            value = item.querySelector(\"span\").innerText.trim().replace(/\\n/g, \" <br />\");\n\n        if(key !== \"Flavor Text\") {\n            if(key === \"Number\")    {\n                key = \"Card Number\";\n            }\n\n            object[toCamelCase(key)] = value;\n        }\n        \n        return object;\n    }\n\n    function getProductName(multiFaced, cardName)   {\n        if(multiFaced)  {\n            let spotlight = document.querySelector(\".spotlight__condition\");\n            return cardName.split(\" // \").map(item => {\n                return spotlight && spotlight.innerText.trim() !== \"\" ? `${item} ${spotlight.innerText.trim().replace(\"Near Mint\", \"\").trim()}` : `${item} - 1st Edition`;\n            }).join(` // `);\n        } else  {\n            let spotlight = document.querySelector(\".spotlight__condition\");\n            \n            return spotlight ? `${cardName} ${spotlight.innerText.trim().replace(\"Near Mint\", \"\").trim()}` : `${cardName} - Regular`;\n        }\n    }\n\n    function getImages()    {\n        return Array.from(document.querySelectorAll(\".image-set__grid .image-set__main .progressive-image\")).map(item => {\n            let imageUri = item.getAttribute(\"style\").split(\"--placeholder:url(\").pop().split(\");\").shift();\n             return imageUri.replace(/\"/g, \"\").replace(\"/filters:quality(10)\", \"\");\n         });\n    }\n\n\n    let additionalCardObject = {},\n        detailsList = Array.from(document.querySelectorAll(\".product-details__details-attributes > li\"));\n    \n    \n    for(let list of detailsList)    {\n        Object.assign(additionalCardObject, getObject(list));\n    }\n\n    additionalCardObject.productName = getProductName(multiFaced, cardName);\n    additionalCardObject.imageUris = getImages();\n    additionalCardObject.finish = function()    {\n        let spotlight = document.querySelector(\".spotlight__condition\");\n        return spotlight && spotlight.innerText.trim() !== \"\" ? spotlight.innerText.trim().replace(\"Near Mint\", \"\").trim() : `Regular`;\n    }();\n    additionalCardObject.cardEffect = function()    {\n        \n        if(multiFaced)  {\n            let [cardName1, cardName2] = cardName.split(\" // \");\n            return document.querySelector(\".product-details__details-description\").innerText.trim().split(cardName2).map(item => item.trim().replace(/\\n+/g, \" <br />\")).join(` // ${cardName2} <br />`);\n        } else  {\n            return document.querySelector(\".product-details__details-description\").innerText.trim().replace(/\\n+/g, \" <br />\");\n        }\n    }();\n\n    \n\n    return additionalCardObject;\n\n}",
+            "waitMethods" : [],
+            "objPropArgs" : ["multiFaced", "cardName"],
+            "type" : "single",
+            "productUrlProp" : "cardUri"
+        }
+    ]
+}

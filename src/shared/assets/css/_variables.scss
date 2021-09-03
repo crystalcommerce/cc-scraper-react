@@ -1,0 +1,68 @@
+// media query device widths
+
+    // mobile
+    $mobile-min-width : 200px;
+    $mobile-max-width : 580px;
+
+    // tablet
+    $tablet-min-width : 581px;
+    $tablet-max-width : 768px;
+
+    // laptop
+    $laptop-min-width : 769px;
+    $laptop-max-width : 1200px;
+
+    // largeScreens
+    $pc-min-width : 1201px;
+    $pc-max-width : 1920px;
+
+    // 2k-4k
+    $ultra-min-width : 1921px;
+
+
+
+// main colors
+
+    $main-color-red : #C25938;
+    $main-color-orange : #DB892F;
+    $main-color-yellow-orange : #F5BE54;
+    $main-color-peach : #F3D7A8;
+    $main-color-yellow : #F5E777;
+    $main-color-black : #343434;
+    $bg-color-green : #bbc3bd;
+
+    // Fonts;
+    $font-family : sans-serif;
+
+$font-size-xs : .7rem; // 15px
+$font-size-sm : 1rem; // 18px
+$font-size-md : 1.2rem; // 20px
+$font-size-lg : 1.4rem; // 25px;
+$font-size-xlg : 1.7rem; // 35px
+$font-size-xxlg : 1.8rem; // 40px;
+$font-size-xxxlg : 2rem; // 40px;    
+
+// text-color;
+$black : #0A1B29;
+$white : #ffffff;
+$light-blue-selected : #83ABCD;
+$green : #2FA134;
+$yellow : #F7CC35;
+$red : #D22424;
+
+
+
+// colors;
+$light-blue-hovered : #80baec;
+$light-blue : #75a0e0;
+$blue : #4f72a7;
+$link-blue : #4ac2f6;
+$dark-blue : #052F52;
+
+// backgrounds;
+$beige : #F3F8FC;
+
+
+
+// effects;
+$transition : background-color 0.2s, color 0.2s ease-in-out;

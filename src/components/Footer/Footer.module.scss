@@ -1,0 +1,15 @@
+@import "../../shared/assets/css/_variables";
+@import "../../shared/assets/css/mixins";
+
+.main-footer    {
+    display : flex;
+    justify-content : flex-end;
+    align-items : center;
+    padding : .7rem;
+    background-color : darken($bg-color-green, 10);
+    height : 50px;
+    margin-top : .7rem;
+    font-size : $font-size-xs;
+    color : darken($bg-color-green, 40);
+    font-weight : bold;
+}

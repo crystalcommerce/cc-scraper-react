@@ -1,0 +1,65 @@
+@import "../../../shared/assets/css/_variables";
+@import "../../../shared/assets/css/mixins";
+
+
+.main-container {
+    display : grid;
+    min-height : calc(100vh - 200px - 1.55rem);
+    & > *  {
+        font-size : $font-size-sm;
+        line-height : 2;
+    }
+    .label {
+        color : rgb(150, 91, 4)
+    }
+    gap: .7rem;
+    grid-auto-flow : row;
+
+}
+
+
+.template-title {
+    color : $light-blue;
+}
+.highlighted    {
+    color :rgb(110, 143, 32);
+}
+.template-subtitle  {
+    font-size : 1rem;
+    color : rgb(105, 138, 160);
+}
+.template-section-title {
+    font-size : 1.25rem;
+    color : rgb(59, 168, 59);
+}
+.error-message  {
+    margin-top : .7rem;
+    color : rgb(204, 21, 21);
+}
+.description    {
+    color :rgb(122, 177, 34);
+    font-size : .9rem;
+}
+
+.buttons-container  {
+    margin-top : 2rem;
+    display : flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    padding : 0;
+    width : 100%;
+    & > *   {
+        margin-right : 2rem;
+        &:last-child   {
+            margin-right : 0
+        }
+    }
+}
+
+.container {
+    padding : 0 2rem;
+    
+    font-size : $font-size-xs;
+    
+}

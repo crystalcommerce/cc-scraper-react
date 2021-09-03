@@ -1,0 +1,13 @@
+@import "../../shared/assets/css/_variables";
+@import "../../shared/assets/css/mixins";
+
+.table  {
+    td, th  {
+        font-size : $font-size-xs;
+    }
+    th  {
+        font-weight : bold;
+        font-size : $font-size-xs;
+    }
+}
+    

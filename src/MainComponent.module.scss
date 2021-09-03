@@ -1,0 +1,8 @@
+@import "./shared/assets/css/_variables";
+@import "./shared/assets/css/mixins";
+.main   {
+    min-height : 100vh;
+    min-width : 100%;
+    background-color : $bg-color-green;    
+    color : #525252;    
+}

@@ -1,0 +1,493 @@
+@import "../../shared/assets/css/_variables";
+@import "../../shared/assets/css/mixins";
+
+.form-container {
+    font-size : $font-size-xs;
+    display : flex;
+    flex-direction : column;
+    justify-content : stretch;
+    align-items : stretch;
+    .template-title {
+        color : $light-blue;
+    }
+    .error-message  {
+        margin-top : .7rem;
+        color : rgb(204, 21, 21);
+    }
+    .form   {
+        display : flex;
+        flex-direction : column;
+        justify-content : stretch;
+        width : 100%;
+        align-items : stretch;
+        font-size : $font-size-xs;
+        & > *   {
+            margin-bottom : 1.4rem;
+            &:last-child   {
+                margin-bottom : 0
+            }
+        }
+        
+        .input-container    {
+            display : grid;
+            grid-auto-flow : column;
+            justify-content: space-between;
+            gap : 7rem;
+            .field-container    {
+                padding : 0;
+                
+                width : 100%;
+            }
+        }
+
+        .input-container-array    {
+            display : flex;
+            flex-direction : column;
+            border : 1px solid #aaa;
+            border-radius : .25rem;
+            padding : 1rem 2rem 2rem;
+            .description    {
+                color : #79c553;
+            }
+            .result-container   {
+                display : flex;
+                padding : 1rem 0;
+                flex-wrap : wrap;
+                & > *   {
+                    margin-right  : .3rem;
+                    margin-bottom : .4rem;
+                    &:last-child   {
+                        margin-right : 0;
+                        margin-bottom : 0;
+                    }
+                }
+            }
+            .input-container    {
+                display : flex;
+                flex-direction : row;
+                justify-content: stretch;
+                align-items : center;
+                .field-container    {
+                    padding : 0;
+                    width : 100%;
+                    .error-message  {
+                        color : rgb(204, 21, 21);
+                    }
+                }
+                & > *   {
+                    margin-right : 2rem;
+                    &:last-child   {
+                        margin-right : 0
+                    }
+                }
+                button  {
+                    background-color : #a4e1b4;
+                    color : #247239;
+                    padding : .25rem 1rem;
+                }
+            }
+            
+        }
+        
+        .buttons-container  {
+            display : flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            width : 100%;
+            & > *   {
+                margin-right : 2rem;
+                &:last-child   {
+                    margin-right : 0
+                }
+            }
+        }
+    }
+}
+
+
+@media only screen and (min-width: $mobile-min-width) and (max-width: $mobile-max-width) {
+    .form-container {
+        font-size : $font-size-xs;
+        display : flex;
+        flex-direction : column;
+        justify-content : stretch;
+        align-items : stretch;
+        .template-title {
+            color : $light-blue;
+        }
+        .form   {
+            display : flex;
+            flex-direction : column;
+            justify-content : stretch;
+            width : 100%;
+            align-items : stretch;
+            font-size : $font-size-xs;
+            & > *   {
+                margin-bottom : 1.4rem;
+                &:last-child   {
+                    margin-bottom : 0
+                }
+            }
+            .input-container    {
+                display : grid;
+                grid-auto-flow : row;
+                justify-content: space-between;
+                gap : 1.4rem;
+            }
+    
+            .input-container-array    {
+                display : flex;
+                flex-direction : column;
+                border : 1px solid #aaa;
+                border-radius : .25rem;
+                padding : .7rem 1rem 1.7rem;
+                .description    {
+                    color : #79c553;
+                }
+                .result-container   {
+                    display : flex;
+                    padding : 1rem 0;
+                    & > *   {
+                        margin-bottom : .4rem;
+                        &:last-child   {
+                            margin-right : 0;
+                            margin-bottom : 0;
+                        }
+                    }
+                }
+                .input-container    {
+                    display : flex;
+                    flex-direction : column;
+                    justify-content: space-between;
+                    align-items : flex-start;
+                    
+                    & > *   {
+                        margin-bottom : 1rem;
+                        &:last-child   {
+                            margin-bottom : 0
+                        }
+                    }
+                    button  {
+                        background-color : #a4e1b4;
+                        color : #247239;
+                        padding : .25rem 1rem;
+                    }
+                }
+                
+            }
+            
+            .buttons-container  {
+                display : flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                width : 100%;
+                & > *   {
+                    margin-right : 2rem;
+                    &:last-child   {
+                        margin-right : 0
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media only screen and (min-width: $tablet-min-width) and (max-width: $tablet-max-width) {
+    
+    .form-container {
+        font-size : $font-size-xs;
+        display : flex;
+        flex-direction : column;
+        justify-content : stretch;
+        align-items : stretch;
+        .template-title {
+            color : $light-blue;
+        }
+        .form   {
+            display : flex;
+            flex-direction : column;
+            justify-content : stretch;
+            width : 100%;
+            align-items : stretch;
+            font-size : $font-size-xs;
+            & > *   {
+                margin-bottom : 1.4rem;
+                &:last-child   {
+                    margin-bottom : 0
+                }
+            }
+            .input-container    {
+                display : grid;
+                grid-auto-flow : row;
+                justify-content: space-between;
+                gap : 1.4rem;
+            }
+    
+            .input-container-array    {
+                display : flex;
+                flex-direction : column;
+                border : 1px solid #aaa;
+                border-radius : .25rem;
+                padding : .7rem 1rem 1.7rem;
+                .description    {
+                    color : #79c553;
+                }
+                .result-container   {
+                    display : flex;
+                    padding : 1rem 0;
+                    & > *   {
+                        margin-bottom : .4rem;
+                        &:last-child   {
+                            margin-right : 0;
+                            margin-bottom : 0;
+                        }
+                    }
+                }
+                .input-container    {
+                    display : flex;
+                    flex-direction : column;
+                    justify-content: space-between;
+                    align-items : flex-start;
+                    
+                    & > *   {
+                        margin-bottom : 1rem;
+                        &:last-child   {
+                            margin-bottom : 0
+                        }
+                    }
+                    button  {
+                        background-color : #a4e1b4;
+                        color : #247239;
+                        padding : .25rem 1rem;
+                    }
+                }
+                
+            }
+            
+            .buttons-container  {
+                display : flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                width : 100%;
+                & > *   {
+                    margin-right : 2rem;
+                    &:last-child   {
+                        margin-right : 0
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+@media only screen and (min-width: $laptop-min-width) and (max-width: $pc-max-width) {
+    .form-container {
+    font-size : $font-size-xs;
+    display : flex;
+    flex-direction : column;
+    justify-content : stretch;
+    align-items : stretch;
+    .template-title {
+        color : $light-blue;
+    }
+    .error-message  {
+        margin-top : .7rem;
+        color : rgb(204, 21, 21);
+    }
+    .form   {
+        display : flex;
+        flex-direction : column;
+        justify-content : stretch;
+        width : 100%;
+        align-items : stretch;
+        font-size : $font-size-xs;
+        & > *   {
+            margin-bottom : 1.4rem;
+            &:last-child   {
+                margin-bottom : 0
+            }
+        }
+        
+        .input-container    {
+            display : grid;
+            grid-auto-flow : column;
+            justify-content: space-between;
+            gap : 2rem;
+            .field-container    {
+                padding : 0;
+                
+                width : 100%;
+            }
+        }
+
+        .input-container-array    {
+            display : flex;
+            flex-direction : column;
+            border : 1px solid #aaa;
+            border-radius : .25rem;
+            padding : 1rem 2rem 2rem;
+            .description    {
+                color : #79c553;
+            }
+            .result-container   {
+                display : flex;
+                padding : 1rem 0;
+                flex-wrap : wrap;
+                & > *   {
+                    margin-right  : .3rem;
+                    margin-bottom : .4rem;
+                    &:last-child   {
+                        margin-right : 0;
+                        margin-bottom : 0;
+                    }
+                }
+            }
+            .input-container    {
+                display : flex;
+                flex-direction : row;
+                justify-content: stretch;
+                align-items : center;
+                .field-container    {
+                    padding : 0;
+                    width : 100%;
+                    .error-message  {
+                        color : rgb(204, 21, 21);
+                    }
+                }
+                & > *   {
+                    margin-right : 2rem;
+                    &:last-child   {
+                        margin-right : 0
+                    }
+                }
+                button  {
+                    background-color : #a4e1b4;
+                    color : #247239;
+                    padding : .25rem 1rem;
+                }
+            }
+            
+        }
+        
+        .buttons-container  {
+            display : flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            width : 100%;
+            & > *   {
+                margin-right : 2rem;
+                &:last-child   {
+                    margin-right : 0
+                }
+            }
+        }
+    }
+}
+
+}
+
+@media only screen and (min-width: $ultra-min-width) {
+    
+    .form-container {
+        font-size : $font-size-xs;
+        display : flex;
+        flex-direction : column;
+        justify-content : stretch;
+        align-items : stretch;
+        .template-title {
+            color : $light-blue;
+        }
+        .form   {
+            display : flex;
+            flex-direction : column;
+            justify-content : stretch;
+            width : 100%;
+            align-items : stretch;
+            font-size : $font-size-xs;
+            & > *   {
+                margin-bottom : 1.4rem;
+                &:last-child   {
+                    margin-bottom : 0
+                }
+            }
+            
+            .input-container    {
+                display : grid;
+                grid-auto-flow : column;
+                justify-content: space-between;
+                gap : 3rem;
+                .field-container    {
+                    padding : 0;
+                    
+                    width : 100%;
+                }
+            }
+    
+            .input-container-array    {
+                display : flex;
+                flex-direction : column;
+                border : 1px solid #aaa;
+                border-radius : .25rem;
+                padding : 1rem 2rem 2rem;
+                .description    {
+                    color : #79c553;
+                }
+                .result-container   {
+                    display : flex;
+                    padding : 1rem 0;
+                    flex-wrap : wrap;
+                    & > *   {
+                        margin-right  : .3rem;
+                        margin-bottom : .4rem;
+                        &:last-child   {
+                            margin-right : 0;
+                            margin-bottom : 0;
+                        }
+                    }
+                }
+                .input-container    {
+                    display : flex;
+                    flex-direction : row;
+                    justify-content: stretch;
+                    align-items : flex-end;
+                    .field-container    {
+                        padding : 0;
+                        width : 100%;
+                    }
+                    & > *   {
+                        margin-right : 2rem;
+                        &:last-child   {
+                            margin-right : 0
+                        }
+                    }
+                    button  {
+                        background-color : #a4e1b4;
+                        color : #247239;
+                        padding : .25rem 1rem;
+                    }
+                }
+                
+            }
+            
+            .buttons-container  {
+                display : flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                width : 100%;
+                & > *   {
+                    margin-right : 2rem;
+                    &:last-child   {
+                        margin-right : 0
+                    }
+                }
+            }
+        }
+    }
+
+}

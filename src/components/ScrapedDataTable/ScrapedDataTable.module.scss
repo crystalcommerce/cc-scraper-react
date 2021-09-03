@@ -1,0 +1,21 @@
+@import "../../shared/assets/css/_variables";
+@import "../../shared/assets/css/mixins";
+
+.mui-table-container    {
+    & > *   {
+        font-weight : normal;
+        font-size : $font-size-sm;
+    }
+    .mui-table  {
+    
+        td, th  {
+            font-size : $font-size-xs;
+        }
+        th  {
+            font-weight : bold;
+            font-size : $font-size-xs;
+        }
+    }
+}
+
+    

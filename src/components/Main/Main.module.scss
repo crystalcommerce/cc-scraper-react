@@ -1,0 +1,49 @@
+@import "../../shared/assets/css/_variables";
+@import "../../shared/assets/css/mixins";
+
+.main-content   {
+    display : flex;
+    flex-direction : column;
+    min-height : calc(100vh - 180px - 1.55rem);
+    margin-top: 1.7rem;
+    font-size : $font-size-sm;
+    // background-color: yellow;
+}
+
+@media only screen and (min-width: $mobile-min-width) and (max-width: $tablet-max-width) {
+
+    .main-content   {
+        display : flex;
+        flex-direction : column;
+        min-height : calc(100vh - 123px);
+        margin-top: .7rem;
+        font-size : $font-size-sm;
+        padding : .7rem;
+    }
+}
+
+@media only screen and (min-width: $laptop-min-width) and (max-width: $laptop-max-width) {
+    
+    .main-content   {
+        display : flex;
+        flex-direction : column;
+        min-height : calc(100vh - 180px - 1.6rem);
+        margin-top: 1.7rem;
+        font-size : $font-size-sm;
+        // background-color: yellow;
+    }
+
+}
+
+@media only screen and (min-width: $ultra-min-width) {
+    
+    .main-content   {
+        display : flex;
+        flex-direction : column;
+        min-height : calc(100vh - 180px - 2rem);
+        margin-top: 1.7rem;
+        font-size : $font-size-sm;
+        // background-color: yellow;
+    }
+
+}

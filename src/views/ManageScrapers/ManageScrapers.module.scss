@@ -1,0 +1,39 @@
+@import "../../shared/assets/css/_variables";
+@import "../../shared/assets/css/mixins";
+
+*  {
+    font-size : $font-size-sm;
+}
+.template-title {
+    color : $light-blue;
+}
+.template-subtitle  {
+    font-size : 1.2rem;
+    color : rgb(105, 138, 160);
+}
+.template-section-title {
+    font-size : 1rem;
+    color : rgb(59, 168, 59);
+}
+.error-message  {
+    margin-top : .7rem;
+    color : rgb(204, 21, 21);
+}
+.description    {
+    color :rgb(122, 177, 34);
+    font-size : .9rem;
+}
+.buttons-container  {
+    margin-top : 2rem;
+    display : flex;
+    flex-direction: row;
+    justify-content: right;
+    align-items: center;
+    width : 100%;
+    & > *   {
+        margin-right : 2rem;
+        &:last-child   {
+            margin-right : 0
+        }
+    }
+}

@@ -1,0 +1,233 @@
+
+@mixin linkText()  {
+    text-decoration : none;
+    position : relative;
+    color : $link-blue;
+    transition : color .2s ease-in-out;
+    &::after {
+        content : '';
+        position : absolute;
+        height : 0;
+        width : 0;
+        border-bottom: 1px solid;
+        top : 100%;
+        left : 50%;
+        transform : translateX(-50%);
+        transition : width .2s ease-in-out;
+    }
+    &:hover::after {
+        width : 100%;
+    }
+}
+
+@mixin headingText($size, $weight)    {
+    font-family : $font-family;
+    font-size : $size;
+    color : $white;
+    line-height : 1.5;
+    font-weight : $weight;
+}
+
+@mixin checkIcon()  {
+    content : "";
+    border: 3px solid $light-blue;
+    position : absolute;
+    width : 21px;
+    height : 7px;
+    border-right-color : transparent;
+    border-top-color : transparent;
+    transform : translate(-70%, -80%)rotate(-45deg);
+    right : calc(100% + 7px);
+    top : 50%;
+    cursor : default;
+}
+
+@mixin checkIconSmall()  {
+    content : "";
+    border: 2px solid $light-blue;
+    position : absolute;
+    width : 15px;
+    height : 5px;
+    border-right-color : transparent;
+    border-top-color : transparent;
+    transform : translate(-70%, -80%) rotate(-45deg);
+    left : -15px;
+    top : 50%;
+    cursor : default;
+}
+
+@mixin linkText($fontSize)   {
+    color : $blue;
+    text-decoration : none;
+    transition : $transition;
+    svg {
+            path {
+            stroke : white;
+            transition : stroke 0.2s, fill 0.2s ease-in-out;
+        }
+    }
+    &:hover {
+        color : $light-blue-hovered;
+        svg {
+            path {
+                stroke : $light-blue-hovered;
+            }
+        }
+    }
+    &.active &:active   {
+        color : $dark-blue;
+        svg {
+            path {
+                stroke : $dark-blue;
+            }
+        }
+    }
+    &.selected {
+        color : $light-blue-selected;
+        svg {
+            path {
+                stroke : $light-blue-selected;
+            }
+        }
+    }
+    font-size : $fontSize;
+    
+
+
+}
+
+@mixin button($padding) {
+    padding : $padding;
+    font-size : $font-size-xs;
+    border-radius : .2rem;
+    outline: 0px;
+
+    cursor : pointer;
+}
+
+
+@mixin textInputIconAndLabelPosition() {
+    i, label    {
+        transition : all 0.2s ease;
+        position : absolute;
+        color: rgba(236, 236, 236, 0.5);
+    }
+    label    {
+        font-size : $font-size-xs;
+        top : 50%;
+        left : 70px;
+        transform : translateY(-50%);
+    }
+    i   {
+        top : 50%;
+        left : 40px;
+        transform : translate(-50%, -50%);
+        font-size : $font-size-lg;
+    }
+    &.active    {
+        background-color : rgba(255, 255, 255, 1);
+        > input {
+            color : #343434;
+        }
+        label, i  {
+            // color : white;
+            color: #1369b3;
+        }
+        label   {
+            top : 12px;
+            left : 70px;
+            font-size: 12px;
+        }
+    }
+    &.filled {
+        background-color : rgba(255, 255, 255, 0.2);
+        > input {
+            color : white;
+        }
+        label, i  {
+            color: #adadad;
+        }
+        label   {
+            top : 12px;
+            left : 70px;
+            font-size: 12px;
+        }
+    }
+}
+
+@mixin bannerImage($gradient-color, $image-url) {
+    background : $gradient-color, url($image-url) no-repeat center;
+    background-size : cover;
+}
+
+@mixin flex()   {
+    display : flex;
+    width : 100%;
+    align-items : baseline;
+    justify-content: baseline;
+}
+@mixin flex-row()   {
+    flex-direction : row;
+}
+@mixin flex-col()   {
+    flex-direction : column;
+}
+
+// items alignment // justification;
+@mixin flex-items-left($direction)   {
+    @if ($direction == "row")   {
+        justify-content : flex-start
+    } @else {
+        align-items : flex-start
+    }
+}
+@mixin flex-items-right($direction)   {
+    @if ($direction == "row")   {
+        justify-content : flex-end;
+    } @else {
+        align-items : flex-end;
+    }
+}
+@mixin flex-items-top($direction)   {
+    @if ($direction == "row")   {
+        align-items : flex-start;
+    } @else {
+        justify-content : flex-start;
+    }
+}
+@mixin flex-items-bot($direction)   {
+    @if ($direction == "row")   {
+        align-items : flex-end;
+    } @else {
+        justify-content : flex-end;
+    }
+}
+@mixin flex-items-center-x($direction)   {
+    @if ($direction == "row")   {
+        justify-content : center;
+    } @else {
+        align-items : center;
+    }
+}
+@mixin flex-items-center-y($direction)   {
+    @if ($direction == "row")   {
+        align-items : center;
+    } @else {
+        justify-content : center;
+    }
+}
+@mixin flex-items-stretch()   {
+    align-items : stretch;
+}
+
+@mixin flex-items-space-evenly()   {
+    justify-content : space-evenly;
+}
+
+@mixin flex-items-space-around()   {
+    justify-content : space-around;
+}
+
+@mixin flex-items-space-between()   {
+    justify-content : space-between;
+}

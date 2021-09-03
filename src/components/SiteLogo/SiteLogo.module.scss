@@ -1,0 +1,15 @@
+@import "../../shared/assets/css/_variables";
+@import "../../shared/assets/css/mixins";
+
+.site-logo  {
+    display : flex;
+    justify-content: center;
+    align-items: center;
+    img {
+        height : 52px; 
+        width : 52px;
+    }
+    a   {
+        @include linkText($font-size-md);
+    }
+}

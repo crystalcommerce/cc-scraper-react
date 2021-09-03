@@ -1,0 +1,83 @@
+@import "./shared/assets/css/_variables";
+@import "./shared/assets/css/mixins";
+
+*   {
+    margin : 0;
+    padding : 0;
+    box-sizing : border-box;
+    z-index : 2;
+}
+
+
+.hidden {
+    display : none!important;
+    height : 0!important;
+    width : 0!important;
+}
+
+
+h1.page-title   {
+    color : $blue;
+    font-size : $font-size-xlg;
+    font-weight : bold;
+}
+
+body    {
+    font-family : $font-family;
+    font-size : $font-size-sm;
+    font-weight : normal;
+    // background: $black;
+    color : #777;
+    line-height : 1.5;
+    letter-spacing : 1;
+    word-spacing : 1.3;
+}
+
+img {
+    width : 100%;
+}
+
+.card   {
+    box-shadow : 0px 0px 4px 1px rgba(0, 0, 0, 0.18);
+}
+
+hr  {
+    background-color : rgba(0, 0, 0, .12);
+    margin : 1.4rem 0;
+}
+
+
+
+/* Change Autocomplete styles in Chrome*/
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+.filled input:-webkit-autofill,
+.filled input:-webkit-autofill:hover, 
+.filled input:-webkit-autofill:focus,
+.filled textarea:-webkit-autofill,
+.filled textarea:-webkit-autofill:hover,
+.filled textarea:-webkit-autofill:focus,
+.filled select:-webkit-autofill,
+.filled select:-webkit-autofill:hover,
+.filled select:-webkit-autofill:focus {
+  border: none!important;
+  -webkit-text-fill-color: inherit!important;
+  box-shadow: 0 0 0px 1000px rga(255,255,255,0) inset!important;
+  -webkit-box-shadow: 0 0 0px 1000px rga(255,255,255,0) inset!important;
+  transition: background-color 5000s ease-in-out 0s!important;
+  color : inherit;
+}
+
+
+
+
+
+
+  

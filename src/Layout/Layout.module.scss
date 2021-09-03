@@ -1,0 +1,76 @@
+@import "../shared/assets/css/_variables";
+@import "../shared/assets/css/mixins";
+
+.wrapper   {
+    padding : .7rem;
+    display : flex;
+    flex-direction : row-reverse;
+    width : 100%;
+    min-height : 100vh;
+    justify-content: space-between;
+    .main-section   {
+        width : calc(100% - .7rem - 300px);
+        padding-top : calc(50px + 2.1rem);
+    }
+    aside {
+        width : 300px;
+    }
+}
+
+
+@media only screen and (min-width: $mobile-min-width) and (max-width: $tablet-max-width) {
+    
+    .wrapper {
+        padding : 0;
+        .main-section {
+            width : 100%;
+            min-height : 100vh;
+            padding-top : calc(10px + 2.1rem);
+            position : relative;
+            > header  {
+                > h1  {
+                    width : 200px;
+                    font-family : $font-size-xs;
+                    line-height : 1.2;
+                    display : none;
+                }
+                
+            }
+            
+
+        }
+        aside {
+            width : 300px;
+            position : fixed;
+            top : 50px;
+            left : -100%;
+            min-height : calc(100vh - 50px);
+            box-shadow : 2px 0px 3px 0px rgba(0, 0, 0, .18);
+            &.active    {
+                left : 0px!important;
+            }
+        }
+
+        
+    }
+
+}
+
+@media only screen and (min-width: $laptop-min-width) and (max-width: $laptop-max-width) {
+    
+   
+
+}
+
+
+@media only screen and (min-width: $pc-min-width) and (max-width: $pc-max-width) {
+    
+    
+
+}
+
+@media only screen and (min-width: $ultra-min-width) {
+    
+    
+
+}

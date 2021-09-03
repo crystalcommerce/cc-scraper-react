@@ -1,0 +1,226 @@
+@import "../../shared/assets/css/_variables";
+@import "../../shared/assets/css/mixins";
+
+.main-container {
+    display : grid;
+    grid-auto-flow : row;
+    width : 100%;
+    gap : .7rem;
+    grid-template-rows: auto auto;
+}
+.template-title {
+    color : $light-blue;
+}
+.template-subtitle  {
+    font-size : 1rem;
+    color : rgb(105, 138, 160);
+}
+.template-section-title {
+    font-size : 1rem;
+    color : rgb(59, 168, 59);
+}
+.model-object-container {
+    padding : 0;
+    width : 100%;
+    display : grid;
+    gap : .7rem;
+
+    grid-auto-flow: column;
+    font-size : $font-size-xs;
+    
+    .schema-container   {
+        
+        li  {
+            font-family : monospace;
+            padding : .7rem 2.7rem .7rem .7rem;
+            background-color : #ccc;
+            display : flex;
+            justify-content: space-around;
+            align-items: center;
+            position: relative;
+            margin-bottom : .7rem;
+            .delete-button  {
+                position : absolute;
+                top : 50%;
+                transform : translateY(-50%);
+                right : 0;
+            }
+        }
+        & > *   {
+            margin:0;
+            padding: 0;
+        }
+    }
+    .form-container {
+        // font-size : $font-size-xs;
+        display : flex;
+        flex-direction : column;
+        justify-content : stretch;
+        align-items : stretch;
+        
+        .form   {
+            display : flex;
+            flex-direction : column;
+            justify-content : stretch;
+            width : 100%;
+            align-items : stretch;
+            // font-size : $font-size-xs;
+            & > *   {
+                margin-bottom : 1.4rem;
+                &:last-child   {
+                    margin-bottom : 0
+                }
+            }
+            
+            .input-container    {
+                
+                display : flex;
+                flex-direction : column;
+                justify-content: space-between;
+                border: 1px solid #aab3ae;
+                border-radius : .25rem;
+                padding : 1.4rem;
+                
+                .field-container    {
+                    padding : 0;
+                    display : flex;
+                    align-items : flex-end;
+                    flex-direction: column;
+                    font-size : .7rem;
+                    .error-message  {
+                        margin-top : .7rem;
+                        color : rgb(204, 21, 21);
+                    }
+                    width : 100%;
+                    & > *   {
+                        margin-bottom : .7rem;
+                        &:last-child   {
+                            margin-bottom : 0
+                        }
+                    }
+                }
+                & > *   {
+                    margin-bottom : 1rem;
+                    &:last-child   {
+                        margin-bottom : 0
+                    }
+                }
+            }
+            
+            
+        }
+    }
+    
+}
+.form   {
+    .input-container-array    {
+        display : flex;
+        flex-direction : column;
+        border : 1px solid #aaa;
+        border-radius : .25rem;
+        padding : 1.4rem;
+        .description    {
+            color : #499cb6;
+        }
+        .result-container   {
+            display : flex;
+            padding : 1rem 0;
+            flex-wrap : wrap;
+            & > *   {
+                margin-right  : .3rem;
+                margin-bottom : .4rem;
+                &:last-child   {
+                    margin-right : 0;
+                    margin-bottom : 0;
+                }
+            }
+        }
+        .input-container-2    {
+            // display : flex;
+            // flex-direction: row;
+            // align-items : flex-end;
+            // justify-content: center;
+            display : grid;
+            grid-auto-flow: column;
+            gap : .7rem;
+            border: none;
+            .field-container    {
+                padding : 0;
+                .error-message  {
+                    color : rgb(204, 21, 21);
+                }
+                
+            }
+            .button-container   {
+                width : auto;
+                display : flex;
+                align-items: flex-end;
+                justify-content: center;
+            }
+            // button  {
+            //     background-color : #a4e1b4;
+            //     color : #247239;
+            //     padding : .25rem 1rem;
+            // }
+        }
+    }
+}
+.buttons-container  {
+    display : flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    width : 100%;
+    & > *   {
+        margin-right : 2rem;
+        &:last-child   {
+            margin-right : 0
+        }
+    }
+}
+
+
+@media only screen and (min-width: $mobile-min-width) and (max-width: $laptop-max-width) {
+    
+    .model-object-container {
+        padding : 0;
+        width : 100%;
+        display : grid;
+        gap : .7rem;
+        grid-auto-flow: row;
+    }
+
+    .form-container {
+        // font-size : $font-size-xs;
+        display : flex;
+        flex-direction : column;
+        justify-content : stretch;
+        align-items : stretch;
+        
+        .form   {
+            display : flex;
+            flex-direction : column;
+            justify-content : stretch;
+            width : 100%;
+            align-items : stretch;
+            // font-size : $font-size-xs;
+            & > *   {
+                margin-bottom : 1.4rem;
+                &:last-child   {
+                    margin-bottom : 0
+                }
+            }
+            
+            .input-container    {
+                
+                display : flex;
+                flex-direction : column;
+                justify-content: space-between;
+                border: 1px solid #aab3ae;
+                padding : .8rem;
+            }
+        }
+    }
+
+    
+}
