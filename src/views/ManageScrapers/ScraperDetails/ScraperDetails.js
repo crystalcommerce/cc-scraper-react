@@ -34,7 +34,8 @@ export default function ScraperDetails({pageTitle})  {
         [messageType, setMessageType] = useState(null),
 
         // edit evaluator functions
-        [editingEvaluatorObjects, setEditingEvaluatorObjects] = useState(false);
+        [editingEvaluatorObjects, setEditingEvaluatorObjects] = useState(false),
+        abortCont = new AbortController();
         
 
     const executeScriptHandler = () => {
@@ -51,8 +52,6 @@ export default function ScraperDetails({pageTitle})  {
         setStatus("info");
         setMessage("Updating the Evalutors");
 
-        console.log(`${baseUrl}/api/scrapers/${id}`);
-        console.log(evaluatorObjects);
 
         fetch(`${baseUrl}/api/scrapers/${id}`, {
             method : "PUT",
@@ -60,7 +59,8 @@ export default function ScraperDetails({pageTitle})  {
                 "Content-type" : "application/json",
                 "x-auth-token" : authToken,
             },
-            body : JSON.stringify({...scraperDetails, evaluatorObjects})
+            body : JSON.stringify({...scraperDetails, evaluatorObjects}),
+            signal : abortCont.signal,
         })
             .then(res => {
                 if(!res.ok) {
@@ -84,9 +84,11 @@ export default function ScraperDetails({pageTitle})  {
 
             })
             .catch(err => {
-                setLoading(false);
-                setStatus("error");
-                setMessage(err.message);
+                if(err.name !== "AbortError")   {
+                    setLoading(false);
+                    setStatus("error");
+                    setMessage(err.message);
+                }
             });
 
         
@@ -104,10 +106,12 @@ export default function ScraperDetails({pageTitle})  {
             headers : {
                 "Content-type" : "application/json",
                 "x-auth-token" : authToken,
-            }
+            },
+            signal : abortCont.signal
         })
             .then(res => res.json())
             .then(data => {
+                console.log(data);
                 if(data.statusOk)    {
                     setMessage("We have successfully deleted the scraper script");
                     setIsLoading(false);
@@ -121,14 +125,15 @@ export default function ScraperDetails({pageTitle})  {
                 }
             })
             .catch(err => {
-                setMessage(err.message);
-                setIsLoading(false);
-                setMessageType("error");
-                setModalOpen(false);
-                // console.log(err)
+                if(err.name !== "AbortError")   {
+                    setMessage(err.message);
+                    setIsLoading(false);
+                    setMessageType("error");
+                    setModalOpen(false);
+                }
             });
 
-        
+        return () => abortCont.abort();
     }
 
     const modalSetter = (value) => {
@@ -138,11 +143,6 @@ export default function ScraperDetails({pageTitle})  {
     }
 
     useEffect(() => {
-        // console.log(scraperDetails);
-        // console.log(editingEvaluatorObjects);
-
-        
-
 
     }, [modalOpen, scraperDetails])
 

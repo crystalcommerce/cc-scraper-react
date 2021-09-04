@@ -98,7 +98,7 @@ export default function useAuth()   {
     useEffect(() => {
         checkLoggedIn();
 
-        return () => console.log("Authentication checked.");
+        // return () => console.log("Authentication checked.");
     }, [isLoggedIn]);
 
 

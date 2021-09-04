@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useAuth from "../../hooks/useAuth";
 
 // Components
@@ -75,6 +75,13 @@ export default function CreateSiteResource({siteResourceHandler, setSelectHandle
     const changeHandler = (inputName, e) => {
         setSiteResource(prev => ({...prev, [inputName] : e.target.value}));
     }
+
+
+    useEffect(() => {
+
+        // clearing memory leaks on unmount.
+        return () => abortCont.abort();
+    }, []);
 
     return (
         <div className={styles["form-container"]}>

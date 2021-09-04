@@ -1,5 +1,5 @@
 import {useState, useEffect} from "react";
-import  { baseUrl, fileUrl } from "../config";
+import  { baseUrl } from "../config";
 import useAuth from "./useAuth";
 
 export default function useFetch(apiEndPoint, fetchOptions, initialValue = [])  {
@@ -11,7 +11,6 @@ export default function useFetch(apiEndPoint, fetchOptions, initialValue = [])  
         { authToken } = useAuth(),
         abortCont = new AbortController();
 
-        // console.log(baseUrl, fileUrl);
 
     useEffect(async () => {
         setIsLoading(true);

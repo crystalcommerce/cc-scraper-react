@@ -52,8 +52,10 @@ export default function ManageScrapedData({pageTitle}) {
         [isLoading, setIsLoading] = useState(false),
         [message, setMessage] = useState(null),
         [status, setStatus] = useState(null),
-        [downloadingZip, setDownloadingZip] = useState(false);
+        [downloadingZip, setDownloadingZip] = useState(false),
 
+        // abort Controller
+        abortCont = new AbortController();
 
 
 
@@ -103,7 +105,7 @@ export default function ManageScrapedData({pageTitle}) {
         e.preventDefault();
         setDownloadingZip(true);
 
-        let { dataDirPath : dirPath, productBrand, groupIdentifier } = productSet,
+        let { dataDirPath : dirPath, productBrand, groupIdentifier, siteName } = productSet,
             { apiRoute } = scraper;
         // productsData
             
@@ -114,7 +116,8 @@ export default function ManageScrapedData({pageTitle}) {
                 "Content-type" : "application/json",
                 "x-auth-token" : authToken,
             },
-            body : JSON.stringify({dirPath, productBrand, groupIdentifierKey : scraper.groupIdentifierKey, groupIdentifier, apiRoute, csvExcludedProps : scraper.csvExcludedProps}),
+            body : JSON.stringify({dirPath, siteName, productBrand, groupIdentifierKey : scraper.groupIdentifierKey, groupIdentifier, apiRoute, csvExcludedProps : scraper.csvExcludedProps}),
+            signal : abortCont.signal,
         })
             .then( res => res.json() )
             .then( data => {
@@ -134,8 +137,10 @@ export default function ManageScrapedData({pageTitle}) {
                 aElem.remove();
             })
             .catch(err => {
-                setDownloadingZip(false);
-                console.log(err.message)
+                if(err.name !== "AbortError")   {
+                    setDownloadingZip(false);
+                    console.log(err.message);
+                }
             });
     }
 
@@ -161,16 +166,17 @@ export default function ManageScrapedData({pageTitle}) {
 
         if(url) {
 
-            // setIsLoading(prev => true);
-            // setStatus(prev => "info");
-            // setMessage("Currently Loading data...");
+            setIsLoading(prev => true);
+            setStatus(prev => "info");
+            setMessage("Currently Loading data...");
 
             fetch(url, {
                 method : "GET",
                 headers : {
                     "Content-type" : "application/json",
                     "x-auth-token" : authToken,
-                }
+                },
+                signal : abortCont.signal,
             })
                 .then(res => {
                     if(!res.ok) {
@@ -183,13 +189,13 @@ export default function ManageScrapedData({pageTitle}) {
                     if(data.length) {
                         
 
-                        // setIsLoading(prev => false);
-                        // setStatus(prev => "success");
-                        // setMessage("We have successfully fetched the data");
+                        setIsLoading(prev => false);
+                        setStatus(prev => "success");
+                        setMessage("We have successfully fetched the data");
                     } else  {
-                        // setIsLoading(prev => false);
-                        // setStatus(prev => "success");
-                        // setMessage("Query is valid, although we don't have any saved data for this set of products.");
+                        setIsLoading(prev => false);
+                        setStatus(prev => "success");
+                        setMessage("Query is valid, although we don't have any saved data for this set of products.");
                     }
                     
                 })
@@ -205,7 +211,10 @@ export default function ManageScrapedData({pageTitle}) {
 
     }, [scraper, productSet]);
 
+    useEffect(() => {
 
+        return abortCont.abort();
+    }, []); 
     
     return  (
         <EmptyCardFlex className={styles["main-container"]}>  
@@ -215,7 +224,18 @@ export default function ManageScrapedData({pageTitle}) {
 
             <EmptyCardFlex >
                 <Card>
-                <h3 className={styles["template-section-title"]}>Please use the filter to display data...</h3>
+                {!scraper && !isLoading && <h3 className={styles["template-section-title"]}>Please use the filter to display data...</h3>}
+                {scraper && !productSet && !isLoading && productsData.length === 0 && <h3 className={styles["template-section-title"]}>We currently have no data to display</h3>}
+                {isLoading && <h3 className={styles["template-section-title"]}>Currently Loading the scraped data</h3>}
+
+                {/* scraper productBrand !productSet */}
+                {scraper && !productSet && !isLoading && productsData.length > 0 && <h3 className={styles["template-section-title"]}>Showing the scraped for <span className={styles["highlighted"]}>{scraper.productBrand}</span></h3>}
+                
+                {/* scraper productBrand !productSet */}
+                {scraper && !isLoading && productSet && productsData.length === 0 && <h3 className={styles["template-section-title"]}>We currently have no data for <span className={styles["highlighted"]}>{scraper.productBrand}</span> - <span className={styles["highlighted-2"]}>{productSet.groupIdentifier}</span></h3>}
+
+                {/* scraper productBrand productSet */}
+                {scraper && !isLoading && productSet && productsData.length > 0 && <h3 className={styles["template-section-title"]}>Showing the scraped data for <span className={styles["highlighted"]}>{scraper.productBrand}</span> - <span className={styles["highlighted-2"]}>{productSet.groupIdentifier}</span></h3>}
                 <div className={styles["select-container"]}>
                     {siteResources.length > 0 && scrapers.length > 0 && <FormControl style={{width : "auto"}}>
                         <Select value={siteResource} selectOnchangeHandler={selectSiteResourceHandler} label="Site Resource" options={siteResources.map(item=> ({...item, labelName : `${item.siteName} - ${item.siteUrl}`}))} uniqueProp="siteName" optionLabelProp="labelName" ></Select>

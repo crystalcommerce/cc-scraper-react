@@ -81,7 +81,7 @@ export default function StickyHeadTable({tableData, uniqueId, excludedColumns}) 
             <TableBody>
                 {rows.length > 0 && rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                 return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={row[uniqueId]}>
+                    <TableRow hover role="checkbox" tabIndex={-1} key={uniqueId ? row[uniqueId] : row}>
                         
                     {columns.filter(column => column.id !== "_id").map((column) => {
                         const value = row[column.id];
@@ -89,12 +89,14 @@ export default function StickyHeadTable({tableData, uniqueId, excludedColumns}) 
                         if(column.id === "imagePaths")  {
                             let imagePaths = value.map(item => item.trim());
                             return  (
-                                <TableCell key={column.id} align={column.align}>
-                                    {imagePaths.map(item => {
-                                        return (
-                                            <img key={item} src={`${fileUrl}${fileToken}?filePath=${item}`} alt="" />
-                                        );
-                                    })}
+                                <TableCell className={styles["image-container"]}key={column.id} align={column.align}>
+                                    <div className={styles["image-slider"]}>
+                                        {imagePaths.map(item => {
+                                            return (
+                                                <img key={item} src={`${fileUrl}${fileToken}?filePath=${item}`} alt="" />
+                                            );
+                                        })}
+                                    </div>
                                 </TableCell>
                             );
                         } else  {

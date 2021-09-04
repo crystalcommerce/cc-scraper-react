@@ -84,10 +84,7 @@ export default function RunScraperScript({pageTitle})  {
         
 
     const groupIdentifierKeyChangeHandler = (e) => {
-        if(e.target.value.trim() !== "")    {
-            setGroupIdentifier(prev => e.target.value)
-        }
-        
+        setGroupIdentifier(prev => e.target.value);
     }
 
     
@@ -101,6 +98,9 @@ export default function RunScraperScript({pageTitle})  {
         });
     }
 
+    const backButtonHandler = () => {
+        history.goBack();
+    }
 
     // bottom buttons event handlers        
     const stopScriptHandler = (e) => {
@@ -192,7 +192,7 @@ export default function RunScraperScript({pageTitle})  {
                             setScrapingStatus("success");
                             setScrapingMessage(`We have successfully scraped the ${productBrand} - ${groupIdentifier} from ${siteName}`)
                             setScrapedData(data.data.scrapedProducts);
-                            setUnscrapedData(data.data.unscrapedData);
+                            setUnscrapedData(data.data.unscrapedProducts);
                         })
                         .catch(err => {
                             setScriptRunning(prev => false);
@@ -405,7 +405,7 @@ export default function RunScraperScript({pageTitle})  {
                     </div>
 
 
-                    {scrapedData && <MuiTable tableData={scrapedData} uniqueId="_id" excludedColumns={csvExcludedProps.filter(item => item !== "imagePaths")}></MuiTable>}
+                    {scrapedData && <MuiTable tableData={scrapedData} excludedColumns={csvExcludedProps.filter(item => item !== "imagePaths")}></MuiTable>}
                 </Card>
             } 
             {scrapingStatus === "success" && unscrapedData &&
@@ -428,7 +428,7 @@ export default function RunScraperScript({pageTitle})  {
                 
                 <div className={styles["field-container"]}>
                     <div className={styles["input-container"]}>
-                        {  !scriptRunning && 
+                        {  !scriptRunning && groupIdentifierKey &&
                             <FormControl fullWidth>
                                 <TextField value={groupIdentifier || ""} onChange={groupIdentifierKeyChangeHandler} label={toNormalString(groupIdentifierKey)} />
                                 {/* {schemaError && <p className={styles["error-message"]}>{schemaError}</p>} */}
@@ -449,7 +449,7 @@ export default function RunScraperScript({pageTitle})  {
                         evaluatorIndexes.map((item, i) => {
                             return (
                                 <div key={item} className={styles["input-container"]}>
-                                    {!scriptRunning &&
+                                    {!scriptRunning && groupIdentifierKey && 
                                         <FormControl fullWidth key={item}>
                                             <TextField onChange={evaluatorUriChangeHandler.bind(this, "url", item, i)} label={`Starting Poin URL`} />
                                             {/* {schemaError && <p className={styles["error-message"]}>{schemaError}</p>} */}
@@ -473,10 +473,10 @@ export default function RunScraperScript({pageTitle})  {
                 <Divider style={{margin : "1.4rem 0"}} />
                 {scraperData._id && <div className={styles["buttons-container"]}>
                     
-                    {scriptRunning && <Button type="button" disabled variant="contained" size="small" style={{}}color="secondary" disableElevation startIcon={<PreviousIcon />} >
+                    {scriptRunning && <Button onClick={backButtonHandler} type="button" disabled variant="contained" size="small" style={{}}color="secondary" disableElevation startIcon={<PreviousIcon />} >
                         Back
                     </Button>}
-                    {!scriptRunning && <Button type="button" variant="contained" size="small" style={{}}color="secondary" disableElevation startIcon={<PreviousIcon />} >
+                    {!scriptRunning && <Button onClick={backButtonHandler} type="button" variant="contained" size="small" style={{}}color="secondary" disableElevation startIcon={<PreviousIcon />} >
                         Back
                     </Button>}
 
@@ -509,7 +509,7 @@ export default function RunScraperScript({pageTitle})  {
 
                 {!scraperData._id && 
                 <div className={styles["buttons-container"]}>
-                    <Button type="button" disabled variant="contained" size="small" style={{}}color="secondary" disableElevation startIcon={<PreviousIcon />} >
+                    <Button onClick={backButtonHandler} type="button" disabled variant="contained" size="small" style={{}}color="secondary" disableElevation startIcon={<PreviousIcon />} >
                         Back
                     </Button>
                     {!scriptRunning && <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler} disabled disableElevation startIcon={<PlayIcon />}>

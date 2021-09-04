@@ -24,7 +24,8 @@ export default function ManageScrapedData({pageTitle}) {
         [siteName, setSiteName] = useState(""),
         [productBrand, setProductBrand] = useState(""),
         [isLoading, setIsLoading] = useState(false),
-        [hasError, setHasError] = useState(false);
+        [hasError, setHasError] = useState(false),
+        abortCont = new AbortController();
         
 
     useEffect(() => {
@@ -40,7 +41,8 @@ export default function ManageScrapedData({pageTitle}) {
                 method : "GET",
                 headers : {
                     "x-auth-token" : authToken,
-                }
+                },
+                signal : abortCont.signal
             })
                 .then(res => res.json())
                 .then(dataObject => {
@@ -54,9 +56,14 @@ export default function ManageScrapedData({pageTitle}) {
                     }
                 })
                 .catch(err => {
-                    setHasError(err.message);
+                    if(err.name !== "AbortError")   {
+                        setHasError(err.message);
+                    }
                 })
         }
+
+
+        return () => abortCont.abort();
     }, [scraperDetails])
 
     return  (

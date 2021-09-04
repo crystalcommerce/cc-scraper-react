@@ -37,18 +37,18 @@ export default function ManageScrapers({pageTitle}) {
             return {
                 ...item, 
                 // action : <DropdownButton size="small" dropDownOptions={dropDownOptions} optionClickHandler={optionClickHandler} />
-                action : <div style={{display: "flex", justifyContent : "space-evenly"}}>
+                action : <div className={styles["action-column"]} style={{display: "flex", flexDirection : "row", gap : ".7rem", justifyContent: "center"}}>
                     <Button 
                         
                         onClick={optionClickHandler.bind(null, `/manage-scrapers/run-script/${item._id}`)}
                         startIcon={<PlayIcon />} 
-                        style={{backgroundColor: "#4fbf4f", color : "white"}}
+                        style={{backgroundColor: "#4fbf4f", color : "white", whiteSpace : "nowrap", minWidth : "125px", maxWidth : "250px"}}
                         size="small">Run the Script</Button>  
                     <Button 
                         onClick={optionClickHandler.bind(null, `/manage-scrapers/${item._id}`)}
                         startIcon={<ListAlt />} 
                         size="small" 
-                        style={{backgroundColor: "rgb(85 159 171)", color : "white"}}>View Details</Button></div>
+                        style={{backgroundColor: "rgb(85 159 171)", color : "white", whiteSpace : "nowrap", minWidth : "125px", maxWidth : "250px"}}>View Details</Button></div>
             }
         }),
         includedKeys = ["_id", "siteName", "productBrand", "groupIdentifierKey", "scraperType", "apiRoute", "action", "anotherAction"],

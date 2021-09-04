@@ -1,5 +1,5 @@
 // hooks
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import { useHistory } from "react-router-dom";
 
@@ -27,7 +27,8 @@ export default function Login() {
         [loginMessage, setLoginMessage] = useState(null),
         [loggingIn, setLoggingIn] = useState(null),
         [messageType, setMessageType] = useState(null),
-        history = useHistory();
+        history = useHistory(),
+        abortCont = new AbortController();
     
 
 
@@ -51,6 +52,7 @@ export default function Login() {
                 "Content-type" : "application/json",
             },
             body : JSON.stringify({username, password}),
+            signal : abortCont.signal
         })
         .then(res => {
             return res.json();
@@ -70,12 +72,19 @@ export default function Login() {
             }
         })
         .catch(err => {
-            setLoggingIn(false);
-            setLoginMessage(err.message);
-            setMessageType(prev => "error");
+            if(err.name !== "AbortError")   {
+                setLoggingIn(false);
+                setLoginMessage(err.message);
+                setMessageType(prev => "error");
+            }
         });
         
     }
+
+    useEffect(() => {
+
+        return () => abortCont.abort();
+    }, []);
     
     return (
         <div className={styles.login}>

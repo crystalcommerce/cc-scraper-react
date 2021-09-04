@@ -19,7 +19,6 @@ import CodeEditor from "../../components/CodeEditor/";
 
 // styles
 import styles from "./CreateEvaluators.module.scss";
-import { toCamelCase } from "../../utilities/string";
 
 export default function CreateEvaluators({currentValue, currentUsageValue, currentGroupIdentifierKeyValue, currentSchema, setEvaluatorObjectsHandler, setUsageHandler, setGroupIdentifierKeyHandler, cancelHandler, backButtonHandler})   {
 
