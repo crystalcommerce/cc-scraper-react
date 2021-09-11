@@ -67,3 +67,26 @@
     gap : .7rem;
     flex-wrap : wrap;
 }
+
+.current-shown-data-container   {
+    display : grid;
+    gap : .7rem;
+    font-size : .7rem;
+    pre {
+        padding : .7rem;
+        border : 1px solid rgb(149, 189, 201);
+        word-break: break-all!important;
+        word-wrap: break-word!important;
+        white-space : pre-wrap!important;
+    }
+}
+
+
+@media only screen and (min-width: $mobile-min-width) and (max-width: $laptop-max-width) {
+    .field-container    {
+        display : grid;
+        gap : 2rem;
+        grid-auto-flow: row;
+        padding : 2rem;
+    }
+}

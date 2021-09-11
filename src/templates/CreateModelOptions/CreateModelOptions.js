@@ -34,10 +34,10 @@ export default function CreateModelSchema({currentValue, setModelObjectHandler, 
             return {key : propKey, ...modelObjectOptions.schema[propKey]}
         })),
         [addSchemaButtonDisabled, setAddSchemaButtonDisabled] = useState(true),
-        [schemaKey, setSchemaKey] = useState(null),
+        [schemaKey, setSchemaKey] = useState(""),
         [schemaKeyType, setSchemaKeyType] = useState("String"),
         [schemaKeyRequired, setSchemaKeyRequired] = useState("false"),
-        [schemaError, setSchemaError] = useState(null),
+        [schemaError, setSchemaError] = useState(""),
 
 
         // model initialized props 
@@ -260,7 +260,7 @@ export default function CreateModelSchema({currentValue, setModelObjectHandler, 
                                     propObjects.uniqueProps.map((item, index) => {
                                         return (
                                             <Chip
-                                                key={`${item}-${index}`}
+                                                key={`${index}`}
                                                 label={item}
                                                 onDelete={handleDeleteChipEntry.bind(this, "uniqueProps", item)}
                                                 deleteIcon={<Cancel />}
@@ -294,7 +294,7 @@ export default function CreateModelSchema({currentValue, setModelObjectHandler, 
                                     propObjects.immutableProps.map((item, index) => {
                                         return (
                                             <Chip
-                                                key={`${item}-${index}`}
+                                                key={`${index}`}
                                                 label={item}
                                                 onDelete={handleDeleteChipEntry.bind(this, "immutableProps", item)}
                                                 deleteIcon={<Cancel />}
@@ -327,7 +327,7 @@ export default function CreateModelSchema({currentValue, setModelObjectHandler, 
                                     propObjects.friendlyUrlProps.map((item, index) => {
                                         return (
                                             <Chip
-                                                key={`${item}-${index}`}
+                                                key={`${index}`}
                                                 label={item}
                                                 onDelete={handleDeleteChipEntry.bind(this, "friendlyUrlProps", item)}
                                                 deleteIcon={<Cancel />}

@@ -153,7 +153,7 @@ export default function CreateScraperData({currentValue, setScraperDataHandler, 
 
 
     useEffect(() => {
-        // console.log(arrItemError);
+        
     }, [arrItemError])
 
     return (

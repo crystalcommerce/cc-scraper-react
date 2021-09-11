@@ -278,7 +278,6 @@ export default function CreateScraper({pageTitle}) {
                 type : "info",
             }
         });
-        console.log("yep...");
         fetch(`${baseUrl}/api/scrapers`, {
             method : "POST",
             headers : {
@@ -433,7 +432,7 @@ export default function CreateScraper({pageTitle}) {
                                         </ul>
                                     </div>
                                 }
-                                {modelObjectOptionsReady &&
+                                { modelObjectOptionsReady &&
                                     <>
                                         <div className={styles["container"]}>
                                             <p>Model Object Options : </p>
@@ -449,7 +448,6 @@ export default function CreateScraper({pageTitle}) {
                                                                                 <li key={prop}><span className={styles["label"]}>{toNormalString(prop)}</span> : {modelObjectOptions.schema[key][prop]}</li>
                                                                             );
                                                                         })}
-                                                                        {/* <li><span className={styles["label"]}>Image Prop Name</span> : </li> */}
                                                                     </ul>
                                                                 </li>
                                                             )
@@ -458,12 +456,11 @@ export default function CreateScraper({pageTitle}) {
                                                 </li>
                                                 <li><span className={styles["label"]}>Initialized Props</span> : 
                                                     <ul>
-                                                        {modelObjectOptions.initializedProps.map(item => {
+                                                        {modelObjectOptions.initializedProps.map((item, index) => {
                                                             return (
-                                                                <li key={item}><span className={styles["label"]}>{toNormalString(Object.keys(item).join(""))}</span> : {Object.values(item).join(", ")}</li>
+                                                                <li key={index}><span className={styles["label"]}>{toNormalString(Object.keys(item).join(""))}</span> : {Object.values(item).join(", ")}</li>
                                                             );
                                                         })}
-                                                    {/* <li><span className={styles["label"]}>id</span> : {siteResource._id}</li> */}
                                                     </ul>
                                                 </li>
                                             </ul>
@@ -599,9 +596,9 @@ export default function CreateScraper({pageTitle}) {
                                                             return (
                                                                 <li key={key}><span className={styles["label"]}>{toNormalString(key)}</span> : 
                                                                     <ul>
-                                                                        {Object.keys(modelObjectOptions.schema[key]).map(prop => {
+                                                                        {Object.keys(modelObjectOptions.schema[key]).map((prop, index) => {
                                                                             return (
-                                                                                <li key={prop}><span className={styles["label"]}>{toNormalString(prop)}</span> : {modelObjectOptions.schema[key][prop]}</li>
+                                                                                <li key={index}><span className={styles["label"]}>{toNormalString(prop)}</span> : {modelObjectOptions.schema[key][prop]}</li>
                                                                             );
                                                                         })}
                                                                         {/* <li><span className={styles["label"]}>Image Prop Name</span> : </li> */}
@@ -613,9 +610,9 @@ export default function CreateScraper({pageTitle}) {
                                                 </li>
                                                 <li><span className={styles["label"]}>Initialized Props</span> : 
                                                     <ul>
-                                                        {modelObjectOptions.initializedProps.map(item => {
+                                                        {modelObjectOptions.initializedProps.map((item, index) => {
                                                             return (
-                                                                <li key={item}><span className={styles["label"]}>{toNormalString(Object.keys(item).join(""))}</span> : {Object.values(item).join(", ")}</li>
+                                                                <li key={index}><span className={styles["label"]}>{toNormalString(Object.keys(item).join(""))}</span> : {Object.values(item).join(", ")}</li>
                                                             );
                                                         })}
                                                     {/* <li><span className={styles["label"]}>id</span> : {siteResource._id}</li> */}

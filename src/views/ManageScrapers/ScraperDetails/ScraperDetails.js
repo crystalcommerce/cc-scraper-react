@@ -111,7 +111,6 @@ export default function ScraperDetails({pageTitle})  {
         })
             .then(res => res.json())
             .then(data => {
-                console.log(data);
                 if(data.statusOk)    {
                     setMessage("We have successfully deleted the scraper script");
                     setIsLoading(false);

@@ -18,8 +18,13 @@ import SaveIcon from '@material-ui/icons/Save';
 import PreviousIcon from '@material-ui/icons/NavigateBefore';
 import MuiTable from "../../../components/MuiTable";
 
+// progress bar
+import LinearProgress from '@material-ui/core/LinearProgress';
+
+
+
 // utils
-import { toNormalString } from "../../../utilities/string";
+import { toCapitalizeAll, toNormalString } from "../../../utilities/string";
 
 // config
 import { baseUrl, socketUrl, fileUrl } from "../../../config";
@@ -27,16 +32,11 @@ import { baseUrl, socketUrl, fileUrl } from "../../../config";
 
 // styles
 import styles from "./RunScraperScript.module.scss";
+import { isObjectInArray } from "../../../utilities/objects-array";
 
 
-
-
-// // socket.io
-// const socket = io(`${socketUrl}`);
-
-// socket.on("greet", (arg) => {
-//     console.log(arg); // world
-// });
+// socket.io
+const socket = io(`${socketUrl}`);
 
 
 export default function RunScraperScript({pageTitle})  {
@@ -74,13 +74,24 @@ export default function RunScraperScript({pageTitle})  {
         [savingDataMessage, setSavingDataMessage] = useState(null),
         [savingDataStatus, setSavingDataStatus] = useState(null),
 
-
-
-
         // scraped data;
         [scrapedData, setScrapedData] = useState(null),
         [unscrapedData, setUnscrapedData] = useState(null),
-        [submitEnabled, setSubmitEnabled] = useState(false);
+        [submitEnabled, setSubmitEnabled] = useState(false),
+
+        // io currentProcess
+        [currentProcess, setCurrentProcess] = useState(null),
+        [currentScrapedProducts, setCurrentScrapedProducts] = useState(0),
+        [rescraping, setRescraping] = useState(false),
+        [totalScrapedData, setTotalScrapedData] = useState(0),
+        [totalUnscrapedData, setTotalUnscrapedData] = useState(0),
+        [currentShownData, setCurrentShownData] = useState([]),
+        [productsTotal, setProductsTotal] = useState(null),
+
+
+        [progress, setProgress] = useState(0),
+
+        abortCont = new AbortController();
         
 
     const groupIdentifierKeyChangeHandler = (e) => {
@@ -113,7 +124,8 @@ export default function RunScraperScript({pageTitle})  {
                     "Content-type" : "application/json",
                     "x-auth-token" : authToken,
                 },
-                body : JSON.stringify({scriptId})
+                body : JSON.stringify({scriptId}),
+                signal : abortCont.signal,
             })
             .then(res => {
                 if(res.ok)  {
@@ -127,20 +139,12 @@ export default function RunScraperScript({pageTitle})  {
                 
             })
             .catch(err => {
-                setScriptRunning(prev => true);
+                if(err.name !== "AbortError")   {
+                    setScriptRunning(prev => true);
+                }
             });
         }
     }
-
-    useEffect(() => {
-        if(groupIdentifier !== null && groupIdentifier.trim() !== "")    {
-            setSubmitEnabled(true)
-        } else  {
-            setSubmitEnabled(false)
-        }
-
-        console.log(submitEnabled);
-    }, [productsListEvaluatorUris, groupIdentifier])
 
     const clearScrapingStates = () => {
         setScriptRunning(prev => false);
@@ -148,9 +152,17 @@ export default function RunScraperScript({pageTitle})  {
         setScrapingStatus(prev => null);
     }
 
-
+    
     const runScraperScriptHandler = (e) => {
         e.preventDefault()
+
+        // reset the other states for downloading process.
+        setCurrentScrapedProducts(prev => null);
+        setCurrentShownData(prev => []);
+        setProductsTotal(prev => null);
+
+        setScrapedData(null);
+        setUnscrapedData(null);
 
         setScriptRunning(prev => true);
         setScrapingMessage(prev => "Currently running the script...");
@@ -162,7 +174,8 @@ export default function RunScraperScript({pageTitle})  {
                 "Content-type" : "application/json",
                 "x-auth-token" : authToken,
             },
-            body : JSON.stringify({groupIdentifier, productsListEvaluatorUris, evaluatorArgs})
+            body : JSON.stringify({groupIdentifier, productsListEvaluatorUris, evaluatorArgs}),
+            signal : abortCont.signal,
         })
             .then(res => {
                 if(res.ok)  {
@@ -180,6 +193,7 @@ export default function RunScraperScript({pageTitle})  {
                             "Content-type" : "application/json",
                             "x-auth-token" : authToken,
                         },
+                        signal : abortCont.signal,
                     })
                         .then(res => {
                             if(!res.ok)  {
@@ -188,32 +202,30 @@ export default function RunScraperScript({pageTitle})  {
                             return res.json();
                         })
                         .then(data => {
-                            setScriptRunning(prev => false);
-                            setScrapingStatus("success");
-                            setScrapingMessage(`We have successfully scraped the ${productBrand} - ${groupIdentifier} from ${siteName}`)
-                            setScrapedData(data.data.scrapedProducts);
-                            setUnscrapedData(data.data.unscrapedProducts);
+                            setScriptRunning(prev => true);
+                            setScrapingStatus("info");
+                            setScrapingMessage(`We are now scraping the data for ${productBrand} - ${groupIdentifier} from ${siteName}`)
                         })
                         .catch(err => {
-                            setScriptRunning(prev => false);
-                            setScrapingMessage(err.message);
-                            setScrapingStatus("error");
-
+                            if(err.name !== "AbortError")   {
+                                setScriptRunning(prev => false); 
+                                setScrapingMessage(err.message);
+                                setScrapingStatus("error");
+                            }
+                            
                         });
                 }, 1500);
                 
 
             })
             .catch(err => {
-                setScriptRunning(prev => false);
-                setScrapingMessage(err.message);
-                setScrapingStatus(prev => "error");
-
-                // setTimeout(() => clearScrapingStates(), 3000);
+                if(err.name !== "AbortError")   {
+                    setScriptRunning(prev => false);
+                    setScrapingMessage(err.message);
+                    setScrapingStatus(prev => "error");
+                }
             });
-
     }
-
 
 
     // action button events handler
@@ -229,6 +241,7 @@ export default function RunScraperScript({pageTitle})  {
                 "Content-type" : "application/json",
                 "x-auth-token" : authToken,
             },
+            signal : abortCont.signal,
         })
             .then( res => res.json() )
             .then( data => {
@@ -247,7 +260,9 @@ export default function RunScraperScript({pageTitle})  {
                 aElem.remove();
             })
             .catch(err => {
-                setDownloadingZip(false);
+                if(err.name !== "AbortError")   {
+                    setDownloadingZip(false);
+                }
             });
     }
 
@@ -266,7 +281,8 @@ export default function RunScraperScript({pageTitle})  {
                 "Content-type" : "application/json",
                 "x-auth-token" : authToken,
             },
-            body : JSON.stringify({apiRoute})
+            body : JSON.stringify({apiRoute, scraperId : id}),
+            signal : abortCont.signal,
         })
             .then( res => res.json() )
             .then( data => {
@@ -284,15 +300,25 @@ export default function RunScraperScript({pageTitle})  {
 
             })
             .catch(err => {
-                setSavingDataMessage(err.message);
-                setSavingDataStatus("error");
+                if(err.name !== "AbortError")   {
+                    setSavingDataMessage(err.message);
+                    setSavingDataStatus("error");
+                }
             });
     }
  
 
-
-
     // useEffect
+
+    useEffect(() => {
+        if(groupIdentifier !== null && groupIdentifier.trim() !== "")    {
+            setSubmitEnabled(true)
+        } else  {
+            setSubmitEnabled(false)
+        }
+
+    }, [productsListEvaluatorUris, groupIdentifier])
+
 
     useEffect(() => {
         if(scraperData._id)   {
@@ -329,8 +355,109 @@ export default function RunScraperScript({pageTitle})  {
     }, [evaluatorObjects, evaluatorIndexes]);
 
     useEffect(() => {
-        
-    }, [scriptRunning])
+
+        // fires up on dismounting of component
+        return () => {
+            fetch(`${baseUrl}/api/script/remove-scraper-object/${scriptId}`, {
+                method : "POST",
+                headers : {
+                    "Content-type" : "application/json",
+                    "x-auth-token" : authToken,
+                },
+                body : JSON.stringify({apiRoute}),
+                signal : abortCont.signal,
+            })
+                .then(res => res.json())
+                .then(data => console.log(data))
+                .catch(err => {
+                    if(err.name !== "AbortError")   {
+                        console.log(err.name);
+                    }
+                });
+
+
+            abortCont.abort();
+        }
+    }, []);
+
+
+
+    /* SOCKET IO CONNECTION */
+    
+    socket.on("current-process", (data) => {
+        if(scriptId === data.scriptId)  {
+
+            
+            if(data.phase === "initial-scraping")   {
+                setCurrentProcess(prev => data);
+                if(data.totalProducts)  {
+                    setProductsTotal(prev => data.totalProducts)
+                }
+            }
+
+            if(data.phase === "data-scraping")  {
+                if(currentProcess && typeof currentProcess.phase !== "undefined" && currentProcess.phase === "initial-scraping") {
+                    setCurrentProcess(prev => data);
+                }
+                if(data.totalScrapedData > totalScrapedData)  {
+                    setTotalScrapedData(prev => {
+                        return data.totalScrapedData;
+                    });
+                    setProgress(prev => (Number(totalScrapedData) / Number(productsTotal)) * 100 );
+                }
+                
+            }
+
+
+            if(data.phase === "set-rescraping") {
+                setRescraping(prev => true);
+                if(data.totalUnscrapedData > 0 && totalUnscrapedData !== data.totalUnscrapedData)    {
+                    setTotalUnscrapedData(prev => data.totalUnscrapedData);
+                    setTotalScrapedData(prev => {
+                        return data.totalScrapedData;
+                    });
+                    setProgress(prev => (Number(data.totalScrapedData) / Number(data.totalUnscrapedData)) * 100 );
+                }
+            }
+
+
+            if(data.phase === "data-rescraping")    {
+                if(currentProcess && typeof currentProcess.phase !== "undefined" && currentProcess.phase === "data-scraping") {
+                    setCurrentProcess(prev => data);
+                }
+                if(data.totalScrapedData > totalScrapedData)  {
+                    setTotalScrapedData(prev => {
+                        return data.totalScrapedData;
+                    });
+
+                    setProgress(prev => (Number(data.totalScrapedData) / Number(totalUnscrapedData)) * 100 );
+                }
+            }
+
+
+            if(data.phase === "image-downloading")   {
+                if(currentProcess &&  (currentProcess.phase === "data-scraping" || currentProcess.phase === "data-rescraping")) {
+                    setCurrentProcess(prev => data);
+                }
+                if(scrapingMessage !== `We are now downloading the images for the scraped the data : ${productBrand} - ${groupIdentifier} from ${siteName}`)    {
+                    setScrapingMessage(`We are now downloading the images for the scraped the data : ${productBrand} - ${groupIdentifier} from ${siteName}`);
+                }
+                
+            }
+
+            if(data.phase === "finalizing")  {
+                setScriptRunning(prev => false);
+                setScrapingStatus("success");
+                setScrapingMessage(`We have successfully scraped the data for ${productBrand} - ${groupIdentifier} from ${siteName}`);
+
+                setCurrentProcess(prev => null);
+                setScrapedData(data.data);
+                setUnscrapedData(data.unscrapedData);
+
+            }
+        }
+    });
+
     
     return (
         <EmptyCardFlex className={styles["main-container"]}>
@@ -371,9 +498,30 @@ export default function RunScraperScript({pageTitle})  {
 
 
 
-            { scriptRunning && 
+            { scriptRunning && currentProcess && 
                 <Card>
-                    Show data here...
+                    {!rescraping && 
+                        <>
+                            <h6 className={styles["template-section-title"]}>{toCapitalizeAll(toNormalString(currentProcess.phase, "url"))} - Total number of products to scrape : <span className={styles["highlighted-2"]}>{productsTotal}</span></h6>
+                            <h6 className={styles["template-section-title"]}>Current Scraped Products : <span className={styles["highlighted-2"]}>{totalScrapedData}</span> / <span className={styles["highlighted-2"]}>{productsTotal}</span></h6>
+                        </>
+                    }
+
+                    {rescraping && 
+                        <>
+                            <h6 className={styles["template-section-title"]}>{toCapitalizeAll(toNormalString(currentProcess.phase, "url"))} - Total number of products to scrape : <span className={styles["highlighted-2"]}>{productsTotal}</span></h6>
+                            <h6 className={styles["template-section-title"]}>We are currently rescraping : <span className={styles["highlighted-2"]}>{totalScrapedData}</span> / <span className={styles["highlighted-2"]}>{totalUnscrapedData}</span> </h6>
+                            <p>By default we are rescraping the unscraped data, until we at least have 5 rows of unscraped data left or lower; or if we have done rescraping the data for at least 5 times.</p>
+                        </>
+                    }
+                    {!rescraping && currentProcess && currentProcess.phase === "image-download" &&
+                        <>
+                            <h6 className={styles["template-section-title"]}>We have already finished rescraping. We are now downloading the images for the scraped products. Scraping process will finish shortly.</h6>
+                        </>
+                    }
+
+                    <LinearProgress variant="determinate" value={progress}  />
+
                 </Card>
             }
 
@@ -381,6 +529,7 @@ export default function RunScraperScript({pageTitle})  {
             {scrapingStatus === "success" && scrapedData &&
 
                 <Card>
+                    
                     <h6 className={styles["section-title"]}>Scraped Data : <span className={styles["highlighted"]}>{productBrand}</span> - <span className={styles["highlighted-2"]}>{groupIdentifier}</span></h6>
 
                     <div className={styles["action-buttons-container"]}>
@@ -405,14 +554,14 @@ export default function RunScraperScript({pageTitle})  {
                     </div>
 
 
-                    {scrapedData && <MuiTable tableData={scrapedData} excludedColumns={csvExcludedProps.filter(item => item !== "imagePaths")}></MuiTable>}
+                    {scrapedData && <MuiTable tableData={scrapedData} uniqueId="cardUri" excludedColumns={csvExcludedProps.filter(item => item !== "imagePaths")}></MuiTable>}
                 </Card>
             } 
             {scrapingStatus === "success" && unscrapedData &&
 
                 <Card>
                     <h6 className={styles["section-title"]}>UNSCRAPED Data : <span className={styles["highlighted"]}>{productBrand}</span> - <span className={styles["highligted-2"]}>{groupIdentifier}</span></h6>
-                    {unscrapedData && <MuiTable tableData={unscrapedData} uniqueId="_id" excludedColumns={csvExcludedProps.filter(item => item !== "cardUri")}></MuiTable>}
+                    {unscrapedData && <MuiTable tableData={unscrapedData} uniqueId="cardUri" excludedColumns={csvExcludedProps.filter(item => item !== "cardUri")}></MuiTable>}
                 </Card>
             }
 
@@ -481,19 +630,6 @@ export default function RunScraperScript({pageTitle})  {
                     </Button>}
 
 
-                    {/* Currently disabled as we don't have a way to stop the process... */}
-
-                    {/* {scriptRunning && <Button onClick={stopScriptHandler} type="button" variant="contained" size="small" style={{backgroundColor : "rgb(201, 85, 85)", color : "white"}} disableElevation startIcon={<StopIcon />}>
-                        Stop Scraping Process
-                    </Button>}
-
-                    {!scriptRunning && <Button onClick={stopScriptHandler} type="button" disabled variant="contained" size="small" disableElevation startIcon={<StopIcon />}>
-                        Stop Scraping Process
-                    </Button>} */}
-                    
-                    {/* <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler} disableElevation disabled startIcon={<CircularProgress style={{height: "20px", width : "20px"}} color="secondary"  />} >
-                        Saving the Scraper Script
-                    </Button> */}
                     {!scriptRunning && submitEnabled &&  <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler} disableElevation startIcon={<PlayIcon />} style={{color : "white", backgroundColor : "green"}}>
                         Run the script
                     </Button>}

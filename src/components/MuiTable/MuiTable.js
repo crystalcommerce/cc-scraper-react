@@ -8,6 +8,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
+import ImageGallery from 'react-image-gallery';
 
 // config
 import { baseUrl, fileUrl} from '../../config/';
@@ -65,7 +66,7 @@ export default function StickyHeadTable({tableData, uniqueId, excludedColumns}) 
             <TableHead>
                 {columns.length > 0 && 
                 <TableRow>
-                {columns.filter(column => column.id !== "_id").map((column) => (
+                {columns.filter(column => column.id !== uniqueId).map((column) => (
                     <TableCell
                     key={column.id}
                     align={column.align}
@@ -79,11 +80,11 @@ export default function StickyHeadTable({tableData, uniqueId, excludedColumns}) 
             </TableHead>
             
             <TableBody>
-                {rows.length > 0 && rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                {rows.length > 0 && rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
                 return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={uniqueId ? row[uniqueId] : row}>
+                    <TableRow hover role="checkbox" tabIndex={-1} key={uniqueId ? row[uniqueId] : index}>
                         
-                    {columns.filter(column => column.id !== "_id").map((column) => {
+                    {columns.filter(column => column.id !== uniqueId).map((column) => {
                         const value = row[column.id];
 
                         if(column.id === "imagePaths")  {
@@ -91,11 +92,35 @@ export default function StickyHeadTable({tableData, uniqueId, excludedColumns}) 
                             return  (
                                 <TableCell className={styles["image-container"]}key={column.id} align={column.align}>
                                     <div className={styles["image-slider"]}>
-                                        {imagePaths.map(item => {
+                                        {/* {imagePaths.map(item => {
                                             return (
                                                 <img key={item} src={`${fileUrl}${fileToken}?filePath=${item}`} alt="" />
                                             );
-                                        })}
+                                        })} */}
+
+                                        <ImageGallery items={imagePaths.map(item => {
+                                            return {
+                                                original : `${fileUrl}${fileToken}?filePath=${item}`,
+                                                thumbnail : `${fileUrl}${fileToken}?filePath=${item}`,
+                                            };
+                                        })} /> 
+
+                                        
+                                        {/* const images = [
+                                        {
+                                            original: 'https://picsum.photos/id/1018/1000/600/',
+                                            thumbnail: 'https://picsum.photos/id/1018/250/150/',
+                                        },
+                                        {
+                                            original: 'https://picsum.photos/id/1015/1000/600/',
+                                            thumbnail: 'https://picsum.photos/id/1015/250/150/',
+                                        },
+                                        {
+                                            original: 'https://picsum.photos/id/1019/1000/600/',
+                                            thumbnail: 'https://picsum.photos/id/1019/250/150/',
+                                        },
+                                        ];
+                                        <ImageGallery items={images} /> */}
                                     </div>
                                 </TableCell>
                             );
@@ -103,7 +128,7 @@ export default function StickyHeadTable({tableData, uniqueId, excludedColumns}) 
                             
                             return (
                                 <TableCell key={column.id} align={column.align}>
-                                    {value}
+                                    {value || ""}
                                 </TableCell>
                             );
                         }

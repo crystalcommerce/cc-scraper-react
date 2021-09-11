@@ -162,7 +162,7 @@
         display : grid;
         gap : .7rem;
     
-        grid-auto-flow: column;
+        grid-auto-flow: row;
         font-size : $font-size-xs;
     
         .input-container    {
@@ -191,7 +191,7 @@
         display : grid;
         gap : .7rem;
     
-        grid-auto-flow: column;
+        grid-auto-flow: row;
         font-size : $font-size-xs;
     
         .input-container    {
@@ -221,7 +221,7 @@
         display : grid;
         gap : .7rem;
     
-        grid-auto-flow: column;
+        grid-auto-flow: row;
         font-size : $font-size-xs;
     
         .input-container    {

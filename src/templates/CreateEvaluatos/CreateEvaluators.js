@@ -306,7 +306,7 @@ export default function CreateEvaluators({currentValue, currentUsageValue, curre
                                         </li>}
                                         {
                                             item.type === "list" && 
-                                            <li>
+                                            <li key={item}>
                                                 <span className={styles["label"]}>Paginated</span> :
                                                 {item.paginated.toString()}
                                             </li>
@@ -374,7 +374,7 @@ export default function CreateEvaluators({currentValue, currentUsageValue, curre
                                         <ul>
                                             {waitMethods.map((item, index) => {
                                                 return (
-                                                    <li key={`${index}-${item}`}>
+                                                    <li key={index}>
                                                         <ul>
                                                             <li><span>Method Name : </span> {item.name}</li>
                                                             <li><span>Method Args : </span> {item.args}</li>
@@ -467,7 +467,7 @@ export default function CreateEvaluators({currentValue, currentUsageValue, curre
                                                                     objPropArgs.map((item, index) => {
                                                                         return (
                                                                             <Chip
-                                                                                key={`${item}-${index}`}
+                                                                                key={item}
                                                                                 label={item}
                                                                                 onDelete={handleDeleteObjPropArgs.bind(this, item)}
                                                                                 deleteIcon={<Cancel />}
@@ -555,14 +555,18 @@ export default function CreateEvaluators({currentValue, currentUsageValue, curre
                                         <Select 
                                             selectOnchangeHandler={groupIdentifierKeyPropChangeHandler} 
                                             label="Product Group / Set Identifier Key" 
-                                            options={[{name : " -- Select a Property Name -- ", value : ""}, ...Object.keys(currentSchema).map(item => {
+                                            options={[{name : " -- Select a Property Name -- ", value : ""}, ...Object.keys(currentSchema).map((item, index) => {
                                             return {
                                                 name : item, value : item,
                                             }
                                         })]} 
                                             uniqueProp="value" 
                                             optionLabelProp="name"
-                                            defaultValue={currentGroupIdentifierKeyValue}
+                                            defaultValue={[{name : " -- Select a Property Name -- ", value : ""}, ...Object.keys(currentSchema).map((item, index) => {
+                                                return {
+                                                    name : item, value : item,
+                                                }
+                                            })].find(item => item["value"] === currentGroupIdentifierKeyValue)}
                                             />
                                         </FormControl>
                                     </div>

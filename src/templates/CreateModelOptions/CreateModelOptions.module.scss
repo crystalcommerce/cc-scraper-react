@@ -180,7 +180,7 @@
 }
 
 
-@media only screen and (min-width: $mobile-min-width) and (max-width: $laptop-max-width) {
+@media only screen and (min-width: $mobile-min-width) and (max-width: 1440px) {
     
     .model-object-container {
         padding : 0;

@@ -200,6 +200,7 @@ export default function ManageScrapedData({pageTitle}) {
                     
                 })
                 .catch(err => {
+                    console.log(err)
                     // setIsLoading(prev => false);
                     // setStatus(prev => "error");
                     // setMessage(err.message);
@@ -224,8 +225,9 @@ export default function ManageScrapedData({pageTitle}) {
 
             <EmptyCardFlex >
                 <Card>
-                {!scraper && !isLoading && <h3 className={styles["template-section-title"]}>Please use the filter to display data...</h3>}
-                {scraper && !productSet && !isLoading && productsData.length === 0 && <h3 className={styles["template-section-title"]}>We currently have no data to display</h3>}
+                {!siteResource && !isLoading && <h3 className={styles["template-section-title"]}>Please use the filter to display data...</h3>}
+                {siteResource && !productSet && !isLoading && productsData.length === 0 && <h3 className={styles["template-section-title"]}>We currently have no data to display</h3>}
+                
                 {isLoading && <h3 className={styles["template-section-title"]}>Currently Loading the scraped data</h3>}
 
                 {/* scraper productBrand !productSet */}
