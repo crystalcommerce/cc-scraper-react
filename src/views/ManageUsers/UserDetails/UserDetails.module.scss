@@ -1,0 +1,71 @@
+@import "../../../shared/assets/css/_variables";
+@import "../../../shared/assets/css/mixins";
+
+.user-info-container {
+    padding : 0 .7rem;
+    
+    font-size : $font-size-sm;
+    
+    .user-info-list {
+        min-width : 300px;
+        width : 700px;
+        & > li  {
+            display : flex;
+            gap : 1rem;
+            .label  {
+                width : 130px;
+                white-space: nowrap;
+                color :rgb(105, 138, 160);
+            }
+            .value  {
+                color :rgb(56, 128, 83);
+                word-wrap : break-word;
+            }
+        }
+    }
+}
+
+.template-title {
+    color : $light-blue;
+}
+.highlighted    {
+    color :rgb(110, 143, 32);
+}
+.template-subtitle  {
+    font-size : 1rem;
+    color : rgb(105, 138, 160);
+}
+.template-section-title {
+    font-size : 1.25rem;
+    color : rgb(59, 168, 59);
+}
+.error-message  {
+    margin-top : .7rem;
+    color : rgb(204, 21, 21);
+}
+.description    {
+    color :rgb(122, 177, 34);
+    font-size : .9rem;
+}
+
+.buttons-container, .buttons-container-main  {
+    margin-top : 2rem;
+    // display : flex;
+    // flex-direction: row;
+    display : grid;
+    grid-auto-flow: column;
+    justify-content: center;
+    gap : 2rem;
+    align-items: center;
+    padding : 0;
+    width : 100%;
+    & > *   {
+        margin-right : 1rem;
+        &:last-child   {
+            margin-right : 0
+        }
+    }
+}
+.buttons-container-main {
+    margin-top : 0;
+}

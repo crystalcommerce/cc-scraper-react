@@ -24,6 +24,7 @@ import routes from "./routes";
 
     // Manage Users
     import ManageUsers from "./views/ManageUsers";
+        import UserDetails from "./views/ManageUsers/UserDetails";
 
     // Manage Tasks
     import ManageTasks from "./views/ManageTasks";
@@ -90,6 +91,9 @@ export default function Main()  {
                     <Route path="/manage-users" exact>
                         <Layout><ManageUsers pageTitle={getRoute("/manage-users").title} /></Layout>
                     </Route>
+                        <Route path="/manage-users/:id" exact>
+                            <Layout><UserDetails pageTitle="User Information" /></Layout>
+                        </Route>
 
                     {/* Tasks*/}
                     <Route path="/manage-tasks" exact>

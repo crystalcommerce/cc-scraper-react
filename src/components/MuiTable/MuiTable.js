@@ -8,7 +8,6 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import ImageGallery from 'react-image-gallery';
 
 // config
 import { baseUrl, fileUrl} from '../../config/';
@@ -63,7 +62,7 @@ export default function StickyHeadTable({tableData, uniqueId, excludedColumns}) 
         <Paper className={`${classes.root}`}>
         <TableContainer className={`${classes.container} ${styles["mui-table-container"]}`}>
             <Table stickyHeader aria-label="sticky table" className={styles["mui-table"]}>
-            <TableHead>
+            <TableHead className={styles["thead"]}>
                 {columns.length > 0 && 
                 <TableRow>
                 {columns.filter(column => column.id !== uniqueId).map((column) => (
@@ -79,7 +78,7 @@ export default function StickyHeadTable({tableData, uniqueId, excludedColumns}) 
                 }   
             </TableHead>
             
-            <TableBody>
+            <TableBody className={styles["tbody"]}>
                 {rows.length > 0 && rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
                 return (
                     <TableRow hover role="checkbox" tabIndex={-1} key={uniqueId ? row[uniqueId] : index}>
@@ -91,44 +90,31 @@ export default function StickyHeadTable({tableData, uniqueId, excludedColumns}) 
                             let imagePaths = value.map(item => item.trim());
                             return  (
                                 <TableCell className={styles["image-container"]}key={column.id} align={column.align}>
-                                    <div className={styles["image-slider"]}>
-                                        {/* {imagePaths.map(item => {
-                                            return (
-                                                <img key={item} src={`${fileUrl}${fileToken}?filePath=${item}`} alt="" />
-                                            );
-                                        })} */}
-
-                                        <ImageGallery items={imagePaths.map(item => {
-                                            return {
-                                                original : `${fileUrl}${fileToken}?filePath=${item}`,
-                                                thumbnail : `${fileUrl}${fileToken}?filePath=${item}`,
-                                            };
-                                        })} /> 
-
-                                        
-                                        {/* const images = [
-                                        {
-                                            original: 'https://picsum.photos/id/1018/1000/600/',
-                                            thumbnail: 'https://picsum.photos/id/1018/250/150/',
-                                        },
-                                        {
-                                            original: 'https://picsum.photos/id/1015/1000/600/',
-                                            thumbnail: 'https://picsum.photos/id/1015/250/150/',
-                                        },
-                                        {
-                                            original: 'https://picsum.photos/id/1019/1000/600/',
-                                            thumbnail: 'https://picsum.photos/id/1019/250/150/',
-                                        },
-                                        ];
-                                        <ImageGallery items={images} /> */}
-                                    </div>
+                                    {imagePaths.length > 1 && <div className={styles["image-slider-container"]}>
+                                        <div className={styles["image-slider-inner"]} >
+                                            {imagePaths.map(item => {
+                                                return (
+                                                    <div className={styles["image-container"]}>
+                                                        <img key={item} src={`${fileUrl}${fileToken}?filePath=${item}`} alt="" />
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>}
+                                    {imagePaths.length < 2 && imagePaths.map(item => {
+                                        return (
+                                            <img key={item} src={`${fileUrl}${fileToken}?filePath=${item}`} alt="" />
+                                        );
+                                    })}
                                 </TableCell>
                             );
                         } else  {
                             
                             return (
                                 <TableCell key={column.id} align={column.align}>
-                                    {value || ""}
+                                    <div className={styles["table-cell"]} style={{ minWidth: column.minWidth, textAlign : column.align, justifyContent : column.align }}>
+                                        {value || ""}
+                                    </div>
                                 </TableCell>
                             );
                         }

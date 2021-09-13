@@ -5,7 +5,6 @@
     margin : 0;
     padding : 0;
     box-sizing : border-box;
-    z-index : 2;
 }
 
 
@@ -77,7 +76,95 @@ select:-webkit-autofill:focus,
 
 
 
+$scrollbar-track-bg : rgb(161, 189, 189);
+$scrollbar-thumb-bg : rgb(200, 212, 219);
+$scrollbar-thumb-hover-bg : rgb(177, 194, 206);
 
 
 
-  
+
+@media only screen and (min-width: $pc-min-width) and (max-width: $pc-max-width) {
+    
+    html {
+        font-size : 18px;
+    }
+    /* width */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height : 10px;
+    }
+    
+    /* Track */
+    ::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 5px $scrollbar-track-bg; 
+    }
+    
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: $scrollbar-thumb-bg; 
+    }
+    
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: $scrollbar-thumb-hover-bg; 
+    }
+}
+
+@media only screen and (min-width: $ultra-min-width) {
+    
+    html {
+        // font-size : calc(100vw * .0104);
+        font-size : 20px;
+
+    }
+    /* width */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height : 10px;
+    }
+    
+    /* Track */
+    ::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 5px $scrollbar-track-bg; 
+    }
+    
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: $scrollbar-thumb-bg; 
+    }
+    
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: $scrollbar-thumb-hover-bg; 
+    }
+
+
+}
+
+@media only screen and (min-width: $laptop-min-width) and (max-width: $laptop-max-width) {
+    
+    html {
+        font-size : 18px;
+    }
+    /* width */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height : 10px;
+    }
+    
+   /* Track */
+    ::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 5px $scrollbar-track-bg; 
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background: $scrollbar-thumb-bg; 
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: $scrollbar-thumb-hover-bg; 
+    }
+
+}
