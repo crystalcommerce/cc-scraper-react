@@ -32,7 +32,6 @@ import { baseUrl, socketUrl, fileUrl } from "../../../config";
 
 // styles
 import styles from "./RunScraperScript.module.scss";
-import { isObjectInArray } from "../../../utilities/objects-array";
 
 
 // socket.io
@@ -113,46 +112,7 @@ export default function RunScraperScript({pageTitle})  {
         history.goBack();
     }
 
-    // bottom buttons event handlers        
-    const stopScriptHandler = (e) => {
-        e.preventDefault();
-
-        if(scriptId)    {
-            fetch(`${baseUrl}/api/script/kill-script-processes/${scriptId}`, {
-                method : "GET",
-                headers : {
-                    "Content-type" : "application/json",
-                    "x-auth-token" : authToken,
-                },
-                body : JSON.stringify({scriptId}),
-                signal : abortCont.signal,
-            })
-            .then(res => {
-                if(res.ok)  {
-                    return res.json()
-                } else  {
-                    throw Error("We couldn't reach the server");
-                }
-            })
-            .then(data => {
-                setScriptRunning(prev => false);
-                
-            })
-            .catch(err => {
-                if(err.name !== "AbortError")   {
-                    setScriptRunning(prev => true);
-                }
-            });
-        }
-    }
-
-    const clearScrapingStates = () => {
-        setScriptRunning(prev => false);
-        setScrapingMessage(prev => null);
-        setScrapingStatus(prev => null);
-    }
-
-    
+    // bottom buttons event handlers       
     const runScraperScriptHandler = (e) => {
         e.preventDefault()
 
@@ -267,9 +227,7 @@ export default function RunScraperScript({pageTitle})  {
     }
 
     const saveDataHandler = (e) => {
-        // /script/save-data/:scriptId
         e.preventDefault();
-        // clearScrapingStates();
         setSavingToDb(true);
         setSavingDataMessage("Currently saving the data");
         setSavingDataStatus("info");

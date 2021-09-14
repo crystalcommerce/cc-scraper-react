@@ -7,9 +7,9 @@ import "./Nav.scss";
 
 export default function Nav({navObjectsArr, className}) {
 
-    let [activeParentMenu, setActiveParentMenu] = useState(null),
-        [activeChildMenu, setActiveChildMenu] = useState(null),
-        [currentUrl, setCurrentUrl] = useState(window.location.href)
+    let setActiveParentMenu = useState(null)[1],
+        setActiveChildMenu = useState(null)[1],
+        currentUrl = useState(window.location.href)[0];
         
     useEffect(() => {
         let parentMenus = Array.from(document.querySelectorAll(`.${styles.nav} > ul > li > a`)),
@@ -30,7 +30,7 @@ export default function Nav({navObjectsArr, className}) {
             activeChild.classList.add(`active-child`);
         };
 
-    }, [currentUrl]);
+    }, [currentUrl, setActiveChildMenu, setActiveParentMenu]);
 
     const setActiveParentHandler = (e) => {
 

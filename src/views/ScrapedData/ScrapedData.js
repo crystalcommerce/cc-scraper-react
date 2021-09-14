@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import useFetch from "../../hooks/useFetch";
-import { useHistory } from "react-router-dom";
 
 
 // Components
@@ -27,11 +26,10 @@ export default function ManageScrapedData({pageTitle}) {
 
 
     let {authToken, fileToken} = useAuth(),
-        history = useHistory(),
 
         // collections of data
         {data : siteResources, fetchMessage, isLoading : fetchLoading} = useFetch(`/api/site-resources/`, {}, []),
-        {data : scrapers, fetchMessage : scrapersFetchMessage, isLoading : isScrapersDataLoading} = useFetch(`/api/scrapers/`, {}, []),
+        {data : scrapers } = useFetch(`/api/scrapers/`, {}, []),
         {data : productSets} = useFetch(`/api/product-sets`, {}, []),
         
 
@@ -214,7 +212,7 @@ export default function ManageScrapedData({pageTitle}) {
 
     useEffect(() => {
 
-        return abortCont.abort();
+        return () => abortCont.abort();
     }, []); 
     
     return  (

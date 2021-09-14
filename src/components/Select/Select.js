@@ -32,7 +32,7 @@ export default function Select2({label, options, uniqueProp, optionLabelProp, se
         if(defaultValue) {
             setSeletedOption(defaultValue[uniqueProp]);
         }
-    }, [defaultValue])
+    }, [defaultValue, uniqueProp])
 
     return (
         <FormControl className={`${classes.formControl} ${styles.select}`}>

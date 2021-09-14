@@ -36,7 +36,7 @@ export default function UserDetails({pageTitle})   {
     let history = useHistory(),
         { authToken, loggedUser } = useAuth(),
         { id } = useParams(),
-        { data : user, setData : setUser, isLoading : isUserLoading, hasError : userFetchError, fetchMessage : userFetchMessage } = useFetch(`/api/users/${id}`),
+        { data : user, hasError : userFetchError, fetchMessage : userFetchMessage } = useFetch(`/api/users/${id}`),
         [currentUser, setCurrentUser] = useState(user),
         [modalOpen, setModalOpen] = useState(false),
         positions = ["guest", "staff", "developer", "administrator", "site-owner"],
@@ -61,7 +61,7 @@ export default function UserDetails({pageTitle})   {
     };
 
     const backButtonHandler = () => {
-        history.goBack();
+        history.push("/manage-users/");
     }
 
     const deleteUserHandler = () => {
@@ -109,6 +109,11 @@ export default function UserDetails({pageTitle})   {
 
     useEffect(() => {
         setCurrentUser(user);        
+
+
+
+        return () => abortCont.abort();
+
     }, [user])
     return (
         <>

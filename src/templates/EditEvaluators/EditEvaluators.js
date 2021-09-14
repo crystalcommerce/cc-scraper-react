@@ -19,7 +19,6 @@ import Alert from '@material-ui/lab/Alert';
 
 // styles
 import styles from "./EditEvaluators.module.scss";
-import { toCamelCase } from "../../utilities/string";
 
 export default function EditEvaluators({currentValue, setEvaluatorObjectsHandler, cancelHandler})   {
 

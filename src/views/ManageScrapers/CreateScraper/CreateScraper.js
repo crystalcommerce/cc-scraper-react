@@ -296,6 +296,7 @@ export default function CreateScraper({pageTitle}) {
                 routeObjectOptions,
                 evaluatorObjects,
             }),
+            signal : abortCont.signal
         })
             .then(res => res.json())
             .then(data => {
@@ -327,14 +328,16 @@ export default function CreateScraper({pageTitle}) {
                 }
             })
             .catch(err => {
-                setSubmitObject(prev => {
-                    return {
-                        ...prev, 
-                        message : `Scraper Script was not saved : ${err.message}`,
-                        loading : false,
-                        type : "error",
-                    }
-                });
+                if(err.name !== "AbortError")   {
+                    setSubmitObject(prev => {
+                        return {
+                            ...prev, 
+                            message : `Scraper Script was not saved : ${err.message}`,
+                            loading : false,
+                            type : "error",
+                        }
+                    });
+                }
             });
     }
 
@@ -347,7 +350,7 @@ export default function CreateScraper({pageTitle}) {
 
         }
 
-
+        return () => abortCont.abort();
     }, [submitObject]);
 
     return  (

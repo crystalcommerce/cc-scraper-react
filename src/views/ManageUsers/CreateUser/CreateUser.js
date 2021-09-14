@@ -11,7 +11,7 @@ import EmptyCardFlex from "../../../components/EmptyCardFlex";
 import Select from "../../../components/Select";
 
 // import SaveIcon from '@material-ui/icons/Save';
-import { Button, Divider, CircularProgress, Modal, TextField, FormControl, InputAdornment } from '@material-ui/core';
+import { Button, Divider, CircularProgress, TextField, FormControl, InputAdornment } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import SaveIcon from '@material-ui/icons/Save';
 import Cancel from '@material-ui/icons/Cancel';
@@ -26,7 +26,6 @@ import styles from "./CreateUser.module.scss";
 import { baseUrl } from "../../../config";
 
 // utils
-import { toCapitalizeAll, toNormalString } from "../../../utilities/string";
 import { debounce } from "../../../utilities";
 
 
@@ -48,6 +47,10 @@ export default function CreateUser({pageTitle})    {
             { name : "Administrator", value : 4 },
         ]),
 
+        // password
+        [passwordMessage, setPasswordMessage] = useState(null),
+        [passwordMessageType, setPasswordMessageType] = useState(null),
+
         // save user states;
         [message, setMessage] = useState(null),
         [isLoading, setIsLoading] = useState(false),
@@ -64,6 +67,16 @@ export default function CreateUser({pageTitle})    {
     const inputChangeHandler = (propName, e) => {
         e.preventDefault();
 
+
+        if(propName === "password")   {
+            if(e.target.value.trim().length >= 8)    {
+                setPasswordMessage("Password is valid");
+                setPasswordMessageType("success");
+            } else  {
+                setPasswordMessage("Password must contain at least 8 characters.");
+                setPasswordMessageType("error");
+            }
+        }
         setUser(prev => {
             let obj = {
                 ...prev,
@@ -71,10 +84,6 @@ export default function CreateUser({pageTitle})    {
             }
             return obj;
         });
-
-        if(propName === "username") {
-            checkUsername(e.target.value);
-        }
     }   
 
 
@@ -93,21 +102,32 @@ export default function CreateUser({pageTitle})    {
         history.push("/manage-users/")
     }
 
+    const usernameKeypressHandler = (e) => {
+        setSaveButtonEnabled(prev => false);
+        setUsernameCheckMessage("Checking the uniqueness of entered username...");
+        setUsernameCheckLoading(true);
+        setUsernameCheckMessageType("info");
+        if(e.code === "Space")  {
+            e.preventDefault();
+        }
+    }
 
-    const checkUsername = debounce((value) => {
-        if(!value.length) {
+    const checkUsername = debounce((e) => {
+
+        console.log("this is firing...");
+
+        let enteredUsername = e.target.value.trim().replace(/\s+/g, "").toLowerCase();
+
+        if(!enteredUsername.length) {
             setUsernameCheckMessage("Please enter a username");
             setUsernameCheckLoading(false);
             setUsernameCheckMessageType("info");
-            setSaveButtonEnabled(false);
         } else  {
-            setUsernameCheckMessage("Checking the uniqueness of entered username...");
-            setUsernameCheckLoading(true);
-            setUsernameCheckMessageType("info");
-            setSaveButtonEnabled(false);
+            
+            
 
 
-            fetch(`${baseUrl}/api/users/all?username=${value}`, {
+            fetch(`${baseUrl}/api/users/all?username=${enteredUsername}`, {
                 method : "GET",
                 headers : {
                     "Content-type" : "application/json",
@@ -123,14 +143,25 @@ export default function CreateUser({pageTitle})    {
                         setUsernameCheckMessage("Username is valid.");
                         setUsernameCheckLoading(false);
                         setUsernameCheckMessageType("success");
-                        setSaveButtonEnabled(true);
+                        setUser(prev => {
+                            return {
+                                ...prev,
+                                username : enteredUsername
+                            }
+                        });
                     }
                 })
                 .catch(err => {
                     if(err.name !== "AbortError")   {
                         setUsernameCheckMessage(err.message);
                         setUsernameCheckLoading(true);
-                        setUsernameCheckMessageType("info");
+                        setUsernameCheckMessageType("error");
+                        setUser(prev => {
+                            return {
+                                ...prev,
+                                username : null
+                            }
+                        });
                     }
                 });
         }
@@ -138,7 +169,9 @@ export default function CreateUser({pageTitle})    {
     }, 1400, false);
 
 
-    const saveUserHandler = () => {
+    const saveUserHandler = (e) => {
+        e.preventDefault();
+        console.log("YOu clicked...")
 
         setMessage("Saving User...");
         setIsLoading(true);
@@ -158,7 +191,7 @@ export default function CreateUser({pageTitle})    {
             .then(data => {
                 setMessage("We have successfully saved the user.");
                 setIsLoading(false);
-                setMessageType("info");
+                setMessageType("success");
                 setSaveButtonEnabled(false);
 
                 let userId = data.data._id;
@@ -176,15 +209,38 @@ export default function CreateUser({pageTitle})    {
 
     }
 
+    const checkAllFields = () => {
+        let results = [];
+
+        for(let key in user)    {
+            if(key === "password")    {
+                if(user.password && user.password.length >= 8)   {
+                    results.push(true);
+                } else  {
+                    results.push(false);
+                }
+            } else  {
+                results.push(user[key] && user[key] !== "");
+            }
+        }
+
+        setSaveButtonEnabled(prev => results.every(res => res));
+    }
+
 
     useEffect(() => {
         if(loggedUser)  {
             setSelectOptions(prev => {
                 return prev.filter(item => item.value < loggedUser.permissionLevel);
-            })
+            });
         }
 
-    }, [loggedUser, user, usernameCheckMessage]);
+        checkAllFields();
+
+
+        return () => abortCont.abort();
+
+    }, [loggedUser, user]);
 
     return (
         <EmptyCardFlex className={styles["main-container"]}>
@@ -198,71 +254,74 @@ export default function CreateUser({pageTitle})    {
             
                 <EmptyCardFlex className={styles["main-cards-container"]}>
                     <Card>  
-                        <div className={styles["create-user-field-container"]}>
-                            <FormControl fullWidth className={styles["firstName"]}>
-                                <TextField 
-                                    value={user.firstName} 
-                                    label="First Name" 
-                                    onChange={inputChangeHandler.bind(this, "firstName")}
-                                />
-                            </FormControl>
-                            <FormControl fullWidth className={styles["lastName"]}>
-                                <TextField 
-                                    value={user.lastName} 
-                                    label="Last Name" 
-                                    onChange={inputChangeHandler.bind(this, "lastName")}
-                                />
-                            </FormControl>
-                            <FormControl fullWidth className={styles["username"]}>
-                                <TextField 
-                                    startAdornment={
-                                        <InputAdornment position="start">
-                                        <UsernameIcon />
-                                        </InputAdornment>
-                                    }
-                                    value={user.username} 
-                                    label="Username" 
-                                    onChange={inputChangeHandler.bind(this, "username")}
-                                />
-                                {usernameCheckMessage && usernameCheckMessageType === "error" && <p className={styles["error-message"]}>{usernameCheckMessage}</p>}
-                                {usernameCheckMessage && usernameCheckMessageType === "info" && usernameCheckLoading && <p className={styles["info-message"]}>{usernameCheckMessage}</p>}
-                                {usernameCheckMessage && usernameCheckMessageType === "info" && !usernameCheckLoading && <p className={styles["info-message"]}>{usernameCheckMessage}</p>}
-                                {usernameCheckMessage && usernameCheckMessageType === "success" && <p className={styles["success-message"]}>{usernameCheckMessage}</p>}
-                            </FormControl>
-                            <FormControl fullWidth className={styles["password"]}>
-                                <TextField 
-                                    startAdornment={
-                                        <InputAdornment position="start">
-                                        <PasswordIcon />
-                                        </InputAdornment>
-                                    }
-                                    value={user.password} 
-                                    label="Password" 
-                                    onChange={inputChangeHandler.bind(this, "password")}
-                                />
-                            </FormControl>
-                            <FormControl fullWidth className={styles["permissionLevel"]}>
-                                <Select defaultValue={selectOptions.find(item => item.value === user.permissionLevel)} selectOnchangeHandler={selectOnChangeHandler} label="Permission / Access Level" options={selectOptions} uniqueProp="value" optionLabelProp="name" ></Select>
-                            </FormControl>
-                        </div>
-                        
-                        <Divider style={{margin : "1.4rem 0"}} />
+                        <form onSubmit={saveUserHandler}>
+                            <div className={styles["create-user-field-container"]}>
+                                <FormControl fullWidth className={styles["firstName"]}>
+                                    <TextField 
+                                        value={user.firstName} 
+                                        label="First Name" 
+                                        onChange={inputChangeHandler.bind(this, "firstName")}
+                                    />
+                                </FormControl>
+                                <FormControl fullWidth className={styles["lastName"]}>
+                                    <TextField 
+                                        value={user.lastName} 
+                                        label="Last Name" 
+                                        onChange={inputChangeHandler.bind(this, "lastName")}
+                                    />
+                                </FormControl>
+                                <FormControl fullWidth className={styles["username"]}>
+                                    <TextField 
+                                        startAdornment={
+                                            <InputAdornment position="start">
+                                            <UsernameIcon />
+                                            </InputAdornment>
+                                        }
+                                        label="Username"
+                                        onKeyPress={usernameKeypressHandler}
+                                        onChange={checkUsername}
+                                    />
+                                    {usernameCheckMessage && usernameCheckMessageType === "error" && <p className={styles["error-message"]}>{usernameCheckMessage}</p>}
+                                    {usernameCheckMessage && usernameCheckMessageType === "info" && usernameCheckLoading && <p className={styles["info-message"]}>{usernameCheckMessage}</p>}
+                                    {usernameCheckMessage && usernameCheckMessageType === "info" && !usernameCheckLoading && <p className={styles["info-message"]}>{usernameCheckMessage}</p>}
+                                    {usernameCheckMessage && usernameCheckMessageType === "success" && <p className={styles["success-message"]}>{usernameCheckMessage}</p>}
+                                </FormControl>
+                                <FormControl fullWidth className={styles["password"]}>
+                                    <TextField 
+                                        startAdornment={
+                                            <InputAdornment position="start">
+                                            <PasswordIcon />
+                                            </InputAdornment>
+                                        }
+                                        value={user.password} 
+                                        label="Password" 
+                                        onChange={inputChangeHandler.bind(this, "password")}
+                                    />
+                                    {passwordMessage && <p className={styles[`${passwordMessageType}-message`]}>{passwordMessage}</p>}
+                                </FormControl>
+                                <FormControl fullWidth className={styles["permissionLevel"]}>
+                                    <Select defaultValue={selectOptions.find(item => item.value === user.permissionLevel)} selectOnchangeHandler={selectOnChangeHandler} label="Permission / Access Level" options={selectOptions} uniqueProp="value" optionLabelProp="name" ></Select>
+                                </FormControl>
+                            </div>
+                            
+                            <Divider style={{margin : "1.4rem 0"}} />
 
-                        <div className={styles["buttons-container-main"]}>
-                            <Button onClick={cancelButtonHandler} type="button" variant="contained" size="small" color="secondary" disableElevation startIcon={<Cancel />}>
-                                Cancel
-                            </Button>
-                            {!saveButtonEnabled && !isLoading && <Button disabled type="button" variant="contained" size="small" color="primary" disableElevation startIcon={<SaveIcon />}>
-                                Save User
-                            </Button>}
+                            <div className={styles["buttons-container-main"]}>
+                                <Button onClick={cancelButtonHandler} type="button" variant="contained" size="small" color="secondary" disableElevation startIcon={<Cancel />}>
+                                    Cancel
+                                </Button>
+                                {!saveButtonEnabled && !isLoading && <Button disabled type="submit" variant="contained" size="small" color="primary" disableElevation startIcon={<SaveIcon />}>
+                                    Save User
+                                </Button>}
 
-                            {!saveButtonEnabled && isLoading && <Button disabled type="button" variant="contained" size="small" color="primary" disableElevation startIcon={<CircularProgress style={{height: "20px", width : "20px"}} />}>
-                                Saving the User...
-                            </Button>}
-                            {saveButtonEnabled && !isLoading && <Button onclick={saveUserHandler} disabled type="button" variant="contained" size="small" color="primary" disableElevation startIcon={<SaveIcon />}>
-                                Save User
-                            </Button>}
-                        </div>
+                                {!saveButtonEnabled && isLoading && <Button disabled type="submit" variant="contained" size="small" color="primary" disableElevation startIcon={<CircularProgress style={{height: "20px", width : "20px"}} />}>
+                                    Saving the User...
+                                </Button>}
+                                {saveButtonEnabled && !isLoading && <Button type="submit" variant="contained" size="small" color="primary" disableElevation startIcon={<SaveIcon />}>
+                                    Save User
+                                </Button>}
+                            </div>
+                        </form>
                     </Card>
                 </EmptyCardFlex>
 

@@ -20,7 +20,7 @@ import styles from "./Login.module.scss";
 
 export default function Login() {
     
-    const { login, isLoggedIn } = useAuth();
+    const { login } = useAuth();
 
     let [username, setUsername] = useState(""),
         [password, setPassword] = useState(""),
@@ -105,8 +105,8 @@ export default function Login() {
                             <TextField type="password" value={password}onChange={onChangeHandler.bind(this, "password")} label="Password" />
                             {/* {schemaError && <p className={styles["error-message"]}>{schemaError}</p>} */}
                         </FormControl>
-                        {!loggingIn && <Button type="button" variant="contained" size="large" color="primary" disableElevation startIcon={<ExitToAppIcon />} type="submit">Login</Button>}
-                        {loggingIn && <Button type="button" variant="contained" size="large" color="primary" disabled disableElevation startIcon={<CircularProgress style={{height: "20px", width : "20px"}}></CircularProgress>} type="submit">Logging in...</Button>}
+                        {!loggingIn && <Button variant="contained" size="large" color="primary" disableElevation startIcon={<ExitToAppIcon />} type="submit">Login</Button>}
+                        {loggingIn && <Button variant="contained" size="large" color="primary" disabled disableElevation startIcon={<CircularProgress style={{height: "20px", width : "20px"}}></CircularProgress>} type="submit">Logging in...</Button>}
                     </form>
                     {loginMessage && messageType === "success" && <p className={styles["template-section-title"]}>{loginMessage}</p>}
                     {loginMessage && messageType === "error" && <p className={styles["error-message"]}>{loginMessage}</p>}

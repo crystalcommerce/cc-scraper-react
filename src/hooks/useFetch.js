@@ -12,7 +12,7 @@ export default function useFetch(apiEndPoint, fetchOptions, initialValue = [])  
         abortCont = new AbortController();
 
 
-    useEffect(async () => {
+    useEffect(() => {
         setIsLoading(true);
         setFetchMessage(prev => "We are currently fetching the data from the database.");
         setHasError(false);

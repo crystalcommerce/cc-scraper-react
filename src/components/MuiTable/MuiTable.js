@@ -10,10 +10,10 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 
 // config
-import { baseUrl, fileUrl} from '../../config/';
+import { fileUrl } from '../../config/';
 
 // utils
-import { toCapitalize, toCapitalizeAll, toNormalString } from "../../utilities/string/index"
+import { toCapitalizeAll, toNormalString } from "../../utilities/string/index"
 import { getAllObjectKeys } from "../../utilities/objects-array/index";
 
 // hooks
@@ -34,7 +34,7 @@ export default function StickyHeadTable({tableData, uniqueId, excludedColumns}) 
     const classes = useStyles();
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(25);
-    const {fileToken, authToken} = useAuth();
+    const { fileToken } = useAuth();
 
     const rows = tableData;
     const columns = Array.isArray(tableData) && tableData.length > 0 ? getAllObjectKeys(tableData).map(item => {

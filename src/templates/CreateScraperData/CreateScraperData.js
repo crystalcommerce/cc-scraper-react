@@ -36,7 +36,6 @@ export default function CreateScraperData({currentValue, setScraperDataHandler, 
             setScraperDataHandler(scraperDetails, true);
         } else  {
             setScraperDataHandler(scraperDetails, false);
-            let errors = [];
             if(!productBrand)   {
                 setProductBrandErrorMessage("Product Brand is required.");
             }
@@ -223,7 +222,7 @@ export default function CreateScraperData({currentValue, setScraperDataHandler, 
                     </div>
                     <div className={styles["input-container"]}>
                         <div className={styles["field-container"]}>
-                            <TextField fullWidth value={arrItem.sharedItem} onChange={arrInputChangeHandler.bind(this, "sharedItem")} fullWidth label="Shared" />
+                            <TextField fullWidth value={arrItem.sharedItem} onChange={arrInputChangeHandler.bind(this, "sharedItem")} label="Shared" />
                             {arrItemError.shared !== null && <p className={styles["error-message"]}>{arrItemError.shared}</p>}
                         </div>
                         <Button onClick={addItemToArrayInObjectHandler.bind(this, "imageNameObject", "shared")} type="button" variant="contained" size="small" disableElevation startIcon={<Add />} >
@@ -251,7 +250,7 @@ export default function CreateScraperData({currentValue, setScraperDataHandler, 
                     </div>
                     <div className={styles["input-container"]}>
                         <div className={styles["field-container"]}>
-                            <TextField fullWidth value={arrItem.csvExcludedPropsItem} onChange={arrInputChangeHandler.bind(this, "csvExcludedPropsItem")} fullWidth label="CSV Excluded Props" />
+                            <TextField value={arrItem.csvExcludedPropsItem} onChange={arrInputChangeHandler.bind(this, "csvExcludedPropsItem")} fullWidth label="CSV Excluded Props" />
                             {arrItemError.csvExcludedProps !== null && <p className={styles["error-message"]}>{arrItemError.csvExcludedProps}</p>}
                         </div>
                         <Button onClick={addItemToArrayInObjectHandler.bind(this, "csvExcludedProps", null)} type="button" variant="contained" size="small" disableElevation startIcon={<Add />} >

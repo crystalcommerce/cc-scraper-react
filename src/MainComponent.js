@@ -48,11 +48,6 @@ export default function Main()  {
         return routes.find(item => item.path === route);
     }
 
-    const getChildRoute = (route) => {
-        let parentRoute = routes.find(item => route.includes(item.path));
-        return parentRoute.children.find(item => item.path === route);
-    }
-
 
     return (
         <div className={styles.main}>
@@ -107,7 +102,7 @@ export default function Main()  {
 
                     {/* My Profile */}
                     <Route path="/my-profile" exact>
-                        <Layout><ManageTasks pageTitle="My Profile" /></Layout>
+                        <Layout><MyProfile pageTitle="My Profile" /></Layout>
                     </Route>
 
                     {/* Login */}

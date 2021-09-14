@@ -1,7 +1,6 @@
 // hooks
 import { useState } from "react";
 import useAuth from "../hooks/useAuth";
-import useWindowWidth from "../hooks/useWindowWidth";
 
 // routes
 import mainNavObjectsArr from "../routes";
@@ -20,10 +19,9 @@ import styles from "./Layout.module.scss";
 
 export default function Layout({ children })  {
 
-    let [active, setActive] = useState(true),
-        windowWidth = useWindowWidth(() => {});
+    let [active, setActive] = useState(true);
 
-    const {isLoggedIn, loggedUser, authToken, fileToken, login, logout} = useAuth();
+    const { isLoggedIn, loggedUser } = useAuth();
 
     const openMenuHandler = (e) => {
         setActive(prev => !prev);

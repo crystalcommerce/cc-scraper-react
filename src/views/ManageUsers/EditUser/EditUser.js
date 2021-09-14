@@ -1,5 +1,4 @@
 // core
-import { useHistory, useParams } from "react-router";
 import { useEffect, useState } from "react";
 import useAuth from "../../../hooks/useAuth";
 
@@ -8,8 +7,7 @@ import Card from "../../../components/Card";
 import Select from "../../../components/Select";
 
 // import SaveIcon from '@material-ui/icons/Save';
-import { Button, Divider, CircularProgress, Modal, TextField, FormControl } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
+import { Button, Divider, CircularProgress, TextField, FormControl } from '@material-ui/core';
 import SaveIcon from '@material-ui/icons/Save';
 import Cancel from '@material-ui/icons/Cancel';
 
@@ -20,8 +18,6 @@ import styles from "./EditUser.module.scss";
 // url;
 import { baseUrl } from "../../../config";
 
-// utils
-import { getAllObjectKeys } from "../../../utilities/objects-array";
 
 
 export default function EditUser({loggedUser, user, editUserSetter, userSetter, updateStateHandler})  {
@@ -128,6 +124,9 @@ export default function EditUser({loggedUser, user, editUserSetter, userSetter, 
 
     useEffect(() => {
         console.log(currentUser);
+
+        return () => abortCont.abort();
+
     }, [currentUser])
     
     return (

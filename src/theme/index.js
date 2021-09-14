@@ -1,5 +1,5 @@
-import { blue,blueGrey, green, lightBlue, orange, purple, red, yellow } from '@material-ui/core/colors';
-import { createTheme, darken } from '@material-ui/core/styles';
+import { blue,blueGrey, red } from '@material-ui/core/colors';
+import { createTheme } from '@material-ui/core/styles';
 
 const theme = createTheme({  
     palette: {
