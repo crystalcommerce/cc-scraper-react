@@ -1,8 +1,10 @@
 // core
 import { useHistory } from "react-router";
+import { useEffect } from "react";
 
 // hooks
-import useFetch from "../../hooks/useFetch"
+import useFetch from "../../hooks/useFetch";
+import useAuth from "../../hooks/useAuth";
 
 // Components
 import Card from "../../components/Card";
@@ -13,7 +15,7 @@ import MuiTable from "../../components/MuiTable";
 import { Button, Divider, CircularProgress } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Add from '@material-ui/icons/Add';
-import PlayIcon from '@material-ui/icons/PlayArrow';
+import AddUserIcon from '@material-ui/icons/PersonAdd';
 import ListAlt from '@material-ui/icons/ListAlt';
 
 
@@ -24,10 +26,12 @@ import styles from "./ManageUsers.module.scss";
 import { getAllObjectKeys } from "../../utilities/objects-array";
 
 
+
 export default function ManageScrapedData({pageTitle}) {
 
     let history = useHistory(),
-        { data : users, setData : setUsers, isLoading : isUsersLoading } = useFetch("/api/users/managed-users"),
+        { loggedUser } = useAuth(),
+        { data : users, setData : setUsers, isLoading : isUsersLoading } = useFetch("/api/users/"),
         tableData = users.sort((a, b) => {
             return a.firstName < b.firstName ? -1 : a.firstName > b.firstName ? 1 : 0;
         })
@@ -56,12 +60,25 @@ export default function ManageScrapedData({pageTitle}) {
         }),
         includedKeys = ["_id", "firstName", "lastName", "username", "accessLevel", "action",],
         excludedColumns = getAllObjectKeys(tableData).filter(key => !includedKeys.includes(key));
+    
+    const addUserHandler = () => {
+        history.push("/manage-users/create");
+    }
+
+
+    useEffect(() => {
+        
+    }, []);
+
 
     return (
         <>
             <h1 className="page-title">{pageTitle}</h1>
             <EmptyCardFlex>
-                <Card>
+                
+                <Card className={styles["main-container"]}>
+                    <Button onClick={addUserHandler} startIcon={<AddUserIcon />} size="md" 
+                        style={{backgroundColor: "rgb(35 191 112)", color : "white", whiteSpace : "nowrap"}}>Add User</Button>
                     <MuiTable tableData={tableData} uniqueId="_id" excludedColumns={excludedColumns}></MuiTable>
                 </Card>
             </EmptyCardFlex>    

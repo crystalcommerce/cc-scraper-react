@@ -555,6 +555,11 @@ export default function CreateEvaluators({currentValue, currentUsageValue, curre
                                         <Select 
                                             selectOnchangeHandler={groupIdentifierKeyPropChangeHandler} 
                                             label="Product Group / Set Identifier Key" 
+                                            defaultValue={[{name : " -- Select a Property Name -- ", value : ""}, ...Object.keys(currentSchema).map((item, index) => {
+                                                return {
+                                                    name : item, value : item,
+                                                }
+                                            })].find(item => item["value"] === currentGroupIdentifierKeyValue)}
                                             options={[{name : " -- Select a Property Name -- ", value : ""}, ...Object.keys(currentSchema).map((item, index) => {
                                             return {
                                                 name : item, value : item,
@@ -562,11 +567,7 @@ export default function CreateEvaluators({currentValue, currentUsageValue, curre
                                         })]} 
                                             uniqueProp="value" 
                                             optionLabelProp="name"
-                                            defaultValue={[{name : " -- Select a Property Name -- ", value : ""}, ...Object.keys(currentSchema).map((item, index) => {
-                                                return {
-                                                    name : item, value : item,
-                                                }
-                                            })].find(item => item["value"] === currentGroupIdentifierKeyValue)}
+                                            
                                             />
                                         </FormControl>
                                     </div>

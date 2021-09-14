@@ -13,6 +13,31 @@
     grid-auto-flow : column;
     gap : .7rem;
 }
+
+.create-user-field-container  {
+    gap : 1.7rem;
+    display : grid;
+    grid-template-areas: "firstName lastName"
+    "username password"
+    "permissionLevel permissionLevel";
+
+    .firstName  {
+        grid-area : firstName;
+    }
+    .lastName  {
+        grid-area : lastName;
+    }
+    .username  {
+        grid-area : username;
+    }
+    .password  {
+        grid-area : password;
+    }
+    .permissionLevel  {
+        grid-area : permissionLevel;
+    }
+}
+
 .user-info-container {
     padding : 0 .7rem;
     
@@ -58,6 +83,16 @@
     margin-top : .7rem;
     color : rgb(204, 21, 21);
 }
+
+.success-message  {
+    margin-top : .7rem;
+    color : rgb(21, 204, 97);
+}
+
+.info-message  {
+    margin-top : .7rem;
+    color : rgb(21, 152, 204);
+}
 .description    {
     color :rgb(122, 177, 34);
     font-size : .9rem;
@@ -91,6 +126,32 @@
         display : grid;
         grid-auto-flow : row;
         gap : .7rem;
+    }
+
+    .create-user-field-container  {
+        gap : 1.7rem;
+        display : grid;
+        grid-template-areas: "firstName firstName"
+        "lastName lastName"
+        "username username"
+        "password password"
+        "permissionLevel permissionLevel";
+    
+        .firstName  {
+            grid-area : firstName;
+        }
+        .lastName  {
+            grid-area : lastName;
+        }
+        .username  {
+            grid-area : username;
+        }
+        .password  {
+            grid-area : password;
+        }
+        .permissionLevel  {
+            grid-area : permissionLevel;
+        }
     }
 }
 

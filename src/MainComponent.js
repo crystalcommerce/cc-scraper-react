@@ -40,6 +40,7 @@ import routes from "./routes";
 
 // css
 import styles from "./MainComponent.module.scss";
+import CreateUser from "./views/ManageUsers/CreateUser";
 
 export default function Main()  {
 
@@ -91,9 +92,13 @@ export default function Main()  {
                     <Route path="/manage-users" exact>
                         <Layout><ManageUsers pageTitle={getRoute("/manage-users").title} /></Layout>
                     </Route>
+                        <Route path="/manage-users/create" exact>
+                            <Layout><CreateUser pageTitle="Create a New User" /></Layout>
+                        </Route>
                         <Route path="/manage-users/:id" exact>
                             <Layout><UserDetails pageTitle="User Information" /></Layout>
                         </Route>
+                        
 
                     {/* Tasks*/}
                     <Route path="/manage-tasks" exact>

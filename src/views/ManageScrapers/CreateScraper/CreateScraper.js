@@ -264,6 +264,9 @@ export default function CreateScraper({pageTitle}) {
                 type : null,
             }
         });
+
+        setModelObjectOptionsReady(false);
+        setEvaluatorObjectsReady(false);
     }
 
 

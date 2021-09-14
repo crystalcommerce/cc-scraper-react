@@ -1,0 +1,11 @@
+@import "../../shared/assets/css/_variables";
+@import "../../shared/assets/css/mixins";
+
+
+.main-container {
+    display : flex;
+    flex-direction : column;
+    justify-content: flex-start;
+    align-items : flex-start;
+    gap : .7rem;
+}
