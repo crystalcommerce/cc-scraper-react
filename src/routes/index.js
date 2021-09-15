@@ -4,11 +4,14 @@ const mainNavObjectsArr = [
         path : "/manage-scrapers",
         shown : true,
         children : [],
+        permissionLevel : 2,
     },
     {
         title : "Scraped / Stored Data",
         path : "/scraped-data",
         children : [],
+        permissionLevel : 2,
+
     },
     {
         title : "Manage Users",
@@ -27,6 +30,8 @@ const mainNavObjectsArr = [
             //     path : "/manage-users/delete-user/:id"
             // }
         ],
+        permissionLevel : 4,
+
     },
     {
         title : "Manage Tasks",
@@ -46,6 +51,7 @@ const mainNavObjectsArr = [
             //     path : "/manage-tasks/delete-scraper/:id"
             // }
         ],
+        permissionLevel : 2,
     }
 ];
 

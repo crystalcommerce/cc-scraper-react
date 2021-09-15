@@ -22,7 +22,6 @@ import MuiTable from "../../../components/MuiTable";
 import LinearProgress from '@material-ui/core/LinearProgress';
 
 
-
 // utils
 import { toCapitalizeAll, toNormalString } from "../../../utilities/string";
 
@@ -90,8 +89,10 @@ export default function RunScraperScript({pageTitle})  {
 
         [progress, setProgress] = useState(0),
 
+        [runningScriptObject, setRunningScriptObject] = useState(null),
+
         abortCont = new AbortController();
-        
+
 
     const groupIdentifierKeyChangeHandler = (e) => {
         setGroupIdentifier(prev => e.target.value);
@@ -111,6 +112,7 @@ export default function RunScraperScript({pageTitle})  {
     const backButtonHandler = () => {
         history.goBack();
     }
+
 
     // bottom buttons event handlers       
     const runScraperScriptHandler = (e) => {
@@ -164,7 +166,9 @@ export default function RunScraperScript({pageTitle})  {
                         .then(data => {
                             setScriptRunning(prev => true);
                             setScrapingStatus("info");
-                            setScrapingMessage(`We are now scraping the data for ${productBrand} - ${groupIdentifier} from ${siteName}`)
+                            setScrapingMessage(`We are now scraping the data for ${productBrand} - ${groupIdentifier} from ${siteName}`);
+
+
                         })
                         .catch(err => {
                             if(err.name !== "AbortError")   {
@@ -254,6 +258,7 @@ export default function RunScraperScript({pageTitle})  {
                 let subApiRoute = apiRoute.replace("/api", ""),
                     url = `/scraped-data${subApiRoute}/all?${groupIdentifierKey}=${groupIdentifier}`;
 
+
                 setTimeout(() => history.push(url), 3000);
 
             })
@@ -313,8 +318,9 @@ export default function RunScraperScript({pageTitle})  {
     }, [evaluatorObjects, evaluatorIndexes]);
 
     useEffect(() => {
-
+        
         // fires up on dismounting of component
+
         return () => {
             fetch(`${baseUrl}/api/script/remove-scraper-object/${scriptId}`, {
                 method : "POST",
@@ -332,21 +338,44 @@ export default function RunScraperScript({pageTitle})  {
                         console.log(err.name);
                     }
                 });
-
-
-            abortCont.abort();
         }
+
+        
     }, []);
 
 
 
-    /* SOCKET IO CONNECTION */
-    
-    socket.on("current-process", (data) => {
-        if(scriptId === data.scriptId)  {
+    // prevent navigation while script running
+    useEffect(() => {
+        function removeClick(e) {
+            e.preventDefault()
+            alert("Please do not navigate to any page while the script is running... try opening the pages on new tabs");
+        }
+        if(!scriptRunning)   {
+            Array.from(document.querySelectorAll("a")).forEach(item => {
+                item.addEventListener("click", removeClick);
+            });
+        } else  {
+            Array.from(document.querySelectorAll("a")).forEach(item => {
+                item.removeEventListener("click", removeClick);
+            });
+        }
 
-            
+        return () => {
+            Array.from(document.querySelectorAll("a")).forEach(item => {
+                item.removeEventListener("click", removeClick);
+            });
+        }
+    }, [scriptRunning]);
+
+    /* SOCKET IO CONNECTION */
+
+    socket.on("current-process", (data) => {
+
+        if(scriptId === data.scriptId)  {
+    
             if(data.phase === "initial-scraping")   {
+
                 setCurrentProcess(prev => data);
                 if(data.totalProducts)  {
                     setProductsTotal(prev => data.totalProducts)
@@ -361,7 +390,7 @@ export default function RunScraperScript({pageTitle})  {
                     setTotalScrapedData(prev => {
                         return data.totalScrapedData;
                     });
-                    setProgress(prev => (Number(totalScrapedData) / Number(productsTotal)) * 100 );
+                    setProgress(prev => (Number(data.totalScrapedData) / Number(productsTotal)) * 100 );
                 }
                 
             }
@@ -408,6 +437,7 @@ export default function RunScraperScript({pageTitle})  {
                 setScrapingStatus("success");
                 setScrapingMessage(`We have successfully scraped the data for ${productBrand} - ${groupIdentifier} from ${siteName}`);
 
+
                 setCurrentProcess(prev => null);
                 setScrapedData(data.data);
                 setUnscrapedData(data.unscrapedData);
@@ -415,8 +445,6 @@ export default function RunScraperScript({pageTitle})  {
             }
         }
     });
-
-    
     return (
         <EmptyCardFlex className={styles["main-container"]}>
             {/* <pre style={{wordBreak : "break-word"}}>

@@ -1,7 +1,6 @@
 // core
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
-
 // Layout
 import Layout from "./Layout";
 
@@ -93,6 +92,8 @@ export default function Main()  {
                         <Route path="/manage-users/:id" exact>
                             <Layout><UserDetails pageTitle="User Information" /></Layout>
                         </Route>
+
+                    
                         
 
                     {/* Tasks*/}

@@ -4,7 +4,7 @@ import { useHistory } from "react-router";
 export default function useActiveMenu() {
     let setActiveParentMenu = useState(null)[1],
         setActiveChildMenu = useState(null)[1],
-        [currentUrl, setCurrentUrl] = useState(null),
+        [currentUrl, setCurrentUrl] = useState(window.location.href),
         history = useHistory();
         
 

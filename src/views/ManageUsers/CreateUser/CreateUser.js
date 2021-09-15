@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 // hooks
 import useAuth from "../../../hooks/useAuth";
+import useAccessCheck from "../../../hooks/useAccessCheck";
 
 // Components
 import Card from "../../../components/Card";
@@ -30,6 +31,8 @@ import { debounce } from "../../../utilities";
 
 
 export default function CreateUser({pageTitle})    {
+
+    useAccessCheck(4);
 
     let history = useHistory(),
         abortCont = new AbortController(),

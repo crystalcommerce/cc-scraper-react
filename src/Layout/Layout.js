@@ -15,15 +15,14 @@ import Nav from "../components/Nav";
 import Footer from "../components/Footer";
 
 
-import { useHistory } from "react-router";
-
 
 // styles
 import styles from "./Layout.module.scss";
 
 export default function Layout({ children })  {
 
-    let [active, setActive] = useState(true);
+    let [active, setActive] = useState(true),
+        [mainNav, setMainNav] = useState([])
     
     useActiveMenu();
 
@@ -33,6 +32,18 @@ export default function Layout({ children })  {
         setActive(prev => !prev);
     }
 
+
+    useEffect(() => {
+
+        if(loggedUser)  {
+            setMainNav(prev => {
+                return mainNavObjectsArr.filter(item => item.permissionLevel <= loggedUser.permissionLevel);
+            })
+        }
+
+
+
+    }, [loggedUser])
 
     return (
         <div className={styles.wrapper}>
@@ -47,7 +58,7 @@ export default function Layout({ children })  {
                 </div>
                 <Sidebar className="card main-sidebar" menuActive={active}>
                     <SiteLogo></SiteLogo>
-                    <Nav navObjectsArr={mainNavObjectsArr} className="main-nav" />
+                    <Nav navObjectsArr={mainNav} className="main-nav" />
                 </Sidebar>
             </>
             }

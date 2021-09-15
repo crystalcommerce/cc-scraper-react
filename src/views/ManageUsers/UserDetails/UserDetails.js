@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 // hooks
 import useFetch from "../../../hooks/useFetch";
 import useAuth from "../../../hooks/useAuth";
+import useAccessCheck from "../../../hooks/useAccessCheck";
 
 // Components
 import Card from "../../../components/Card";
@@ -32,6 +33,8 @@ import { toCapitalizeAll, toNormalString } from "../../../utilities/string";
 
 
 export default function UserDetails({pageTitle})   {
+
+    useAccessCheck(4);
 
     let history = useHistory(),
         { authToken, loggedUser } = useAuth(),

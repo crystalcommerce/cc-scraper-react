@@ -1,9 +1,9 @@
 // core
 import { useHistory } from "react-router";
-import { useEffect } from "react";
 
 // hooks
 import useFetch from "../../hooks/useFetch";
+import useAccessCheck from "../../hooks/useAccessCheck";
 
 // Components
 import Card from "../../components/Card";
@@ -63,10 +63,7 @@ export default function ManageScrapedData({pageTitle}) {
     }
 
 
-    useEffect(() => {
-        
-    }, []);
-
+    useAccessCheck(4);
 
     return (
         <>
