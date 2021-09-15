@@ -1,6 +1,7 @@
 // hooks
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useAuth from "../hooks/useAuth";
+import useActiveMenu from "../hooks/useActiveMenu";
 
 // routes
 import mainNavObjectsArr from "../routes";
@@ -14,18 +15,24 @@ import Nav from "../components/Nav";
 import Footer from "../components/Footer";
 
 
+import { useHistory } from "react-router";
+
+
 // styles
 import styles from "./Layout.module.scss";
 
 export default function Layout({ children })  {
 
     let [active, setActive] = useState(true);
+    
+    useActiveMenu();
 
     const { isLoggedIn, loggedUser } = useAuth();
 
     const openMenuHandler = (e) => {
         setActive(prev => !prev);
     }
+
 
     return (
         <div className={styles.wrapper}>
@@ -38,9 +45,9 @@ export default function Layout({ children })  {
                     <Main>{children}</Main>
                     <Footer></Footer>
                 </div>
-                <Sidebar className="card" menuActive={active}>
+                <Sidebar className="card main-sidebar" menuActive={active}>
                     <SiteLogo></SiteLogo>
-                    <Nav navObjectsArr={mainNavObjectsArr} />
+                    <Nav navObjectsArr={mainNavObjectsArr} className="main-nav" />
                 </Sidebar>
             </>
             }

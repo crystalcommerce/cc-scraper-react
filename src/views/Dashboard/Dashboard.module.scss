@@ -1,0 +1,30 @@
+@import "../../shared/assets/css/_variables";
+@import "../../shared/assets/css/mixins";
+
+.main-container {
+    display : grid;
+    grid-auto-flow: row;
+    gap : .7rem;
+}
+.grid-container {
+    display : grid;
+    min-height : calc(100vh - 14rem);
+    gap: .7rem;
+    grid-template-areas:
+        "data data data users users"
+        "data data data users users"
+        "profile profile scrapers scrapers scrapers";
+
+    .data-container {
+        grid-area : data;
+    }
+    .users-container {
+        grid-area : users;
+    }
+    .scrapers-container {
+        grid-area : scrapers;
+    }
+    .profile-container {
+        grid-area : profile;
+    }
+}

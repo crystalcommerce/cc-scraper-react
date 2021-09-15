@@ -4,7 +4,6 @@ import useAuth from "../../../hooks/useAuth";
 
 // Components
 import Card from "../../../components/Card";
-import Select from "../../../components/Select";
 
 // import SaveIcon from '@material-ui/icons/Save';
 import { Button, Divider, CircularProgress, TextField, FormControl } from '@material-ui/core';
@@ -128,8 +127,6 @@ export default function EditInfo({currentUser, currentUserSetter, updateStateHan
             setUpdateButtonEnabled(false);
         }
 
-
-        console.log(firstName, lastName, password, passwordConf)
 
         return () => abortCont.abort();
     }, [changePassword, firstName, lastName, password, passwordConf]);

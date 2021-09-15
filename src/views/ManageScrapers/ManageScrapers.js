@@ -2,7 +2,7 @@
 import { useHistory } from "react-router";
 
 // hooks
-import useFetch from "../../hooks/useFetch"
+import useFetch from "../../hooks/useFetch";
 
 // Components
 import Card from "../../components/Card";
