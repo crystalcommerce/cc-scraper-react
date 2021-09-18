@@ -3,6 +3,7 @@ import { useHistory } from "react-router";
 
 // hooks
 import useFetch from "../../hooks/useFetch";
+import useAuth from "../../hooks/useAuth";
 
 // Components
 import Card from "../../components/Card";
@@ -24,10 +25,10 @@ import styles from "./ManageScrapers.module.scss";
 import { getAllObjectKeys } from "../../utilities/objects-array";
 
 
-
 export default function ManageScrapers({pageTitle}) {
 
-    let history = useHistory(),
+    let { loggedUser } = useAuth(),
+        history = useHistory(),
         {data : scrapers, isLoading : isLoadingTableData} = useFetch("/api/scrapers"),
         tableData = scrapers.map(item => {
             const optionClickHandler = (value) => {
@@ -44,11 +45,11 @@ export default function ManageScrapers({pageTitle}) {
                         startIcon={<PlayIcon />} 
                         style={{backgroundColor: "#4fbf4f", color : "white", whiteSpace : "nowrap", minWidth : "125px", maxWidth : "250px"}}
                         size="small">Run the Script</Button>  
-                    <Button 
+                    {loggedUser.permissionLevel >= 3 && <Button 
                         onClick={optionClickHandler.bind(null, `/manage-scrapers/${item._id}`)}
                         startIcon={<ListAlt />} 
                         size="small" 
-                        style={{backgroundColor: "rgb(85 159 171)", color : "white", whiteSpace : "nowrap", minWidth : "125px", maxWidth : "250px"}}>View Details</Button></div>
+                        style={{backgroundColor: "rgb(85 159 171)", color : "white", whiteSpace : "nowrap", minWidth : "125px", maxWidth : "250px"}}>View Details</Button>}</div>
             }
         }),
         includedKeys = ["_id", "siteName", "productBrand", "groupIdentifierKey", "scraperType", "apiRoute", "action", "anotherAction"],
@@ -67,9 +68,9 @@ export default function ManageScrapers({pageTitle}) {
             <EmptyCardFlex flexDirection="column">
                 <Card>
                     <div className={styles["buttons-container"]}>
-                        <Button onClick={createScraperButtonClickHandler} type="button" variant="contained" size="medium" color="primary" disableElevation startIcon={<Add />} >
+                        {loggedUser && loggedUser.permissionLevel >= 3 && <Button onClick={createScraperButtonClickHandler} type="button" variant="contained" size="medium" color="primary" disableElevation startIcon={<Add />} >
                             Create a new Scraper
-                        </Button>
+                        </Button>}
                     </div>
                     {isLoadingTableData && 
                         <>

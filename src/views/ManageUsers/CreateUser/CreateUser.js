@@ -42,9 +42,10 @@ export default function CreateUser({pageTitle})    {
             lastName : null,
             username : null,
             password : null,
-            permissionLevel : 2,
+            permissionLevel : 1,
         }),
         [selectOptions, setSelectOptions] = useState([
+            { name : "Guest", value : 1 },
             { name : "Staff", value : 2 },
             { name : "Developer", value : 3 },
             { name : "Administrator", value : 4 },
@@ -117,7 +118,6 @@ export default function CreateUser({pageTitle})    {
 
     const checkUsername = debounce((e) => {
 
-        console.log("this is firing...");
 
         let enteredUsername = e.target.value.trim().replace(/\s+/g, "").toLowerCase();
 
@@ -174,7 +174,6 @@ export default function CreateUser({pageTitle})    {
 
     const saveUserHandler = (e) => {
         e.preventDefault();
-        console.log("YOu clicked...")
 
         setMessage("Saving User...");
         setIsLoading(true);

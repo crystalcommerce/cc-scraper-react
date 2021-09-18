@@ -3,6 +3,7 @@ import useFetch from "../../../hooks/useFetch";
 import { useState, useEffect } from "react";
 import useAuth from "../../../hooks/useAuth";
 import { baseUrl } from "../../../config";
+import useAccessCheck from "../../../hooks/useAccessCheck"
 
 
 // components
@@ -23,6 +24,8 @@ import styles from "./ScraperDetails.module.scss";
 
 
 export default function ScraperDetails({pageTitle})  {
+
+    useAccessCheck(3);
 
     let { authToken } = useAuth(),
         { id } = useParams(),

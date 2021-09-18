@@ -114,6 +114,26 @@ export default function RunScraperScript({pageTitle})  {
     }
 
 
+    const runScraperScriptHandler2 = (e) => {
+        e.preventDefault();
+
+        // reset the other states for downloading process.
+        setCurrentScrapedProducts(prev => null);
+        setCurrentShownData(prev => []);
+        setProductsTotal(prev => null);
+
+        setScrapedData(null);
+        setUnscrapedData(null);
+
+        setScriptRunning(prev => true);
+        setScrapingMessage(prev => "Currently running the script...");
+        setScrapingStatus(prev => "info");
+
+
+        socket.emit("run-script", {scraperId : id, groupIdentifier, productsListEvaluatorUris, evaluatorArgs});
+
+    }
+
     // bottom buttons event handlers       
     const runScraperScriptHandler = (e) => {
         e.preventDefault()
@@ -129,6 +149,10 @@ export default function RunScraperScript({pageTitle})  {
         setScriptRunning(prev => true);
         setScrapingMessage(prev => "Currently running the script...");
         setScrapingStatus(prev => "info");
+
+
+        
+
 
         fetch(`${baseUrl}/api/script/create-script/${id}`, {
             method : "POST",
@@ -343,15 +367,16 @@ export default function RunScraperScript({pageTitle})  {
         
     }, []);
 
-
+    
 
     // prevent navigation while script running
     useEffect(() => {
+        
         function removeClick(e) {
             e.preventDefault()
             alert("Please do not navigate to any page while the script is running... try opening the pages on new tabs");
         }
-        if(!scriptRunning)   {
+        if(scriptRunning)   {
             Array.from(document.querySelectorAll("a")).forEach(item => {
                 item.addEventListener("click", removeClick);
             });
@@ -369,7 +394,7 @@ export default function RunScraperScript({pageTitle})  {
     }, [scriptRunning]);
 
     /* SOCKET IO CONNECTION */
-
+    // socket.on("connection")
     socket.on("current-process", (data) => {
 
         if(scriptId === data.scriptId)  {
@@ -616,15 +641,15 @@ export default function RunScraperScript({pageTitle})  {
                     </Button>}
 
 
-                    {!scriptRunning && submitEnabled &&  <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler} disableElevation startIcon={<PlayIcon />} style={{color : "white", backgroundColor : "green"}}>
+                    {!scriptRunning && submitEnabled &&  <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler2} disableElevation startIcon={<PlayIcon />} style={{color : "white", backgroundColor : "green"}}>
                         Run the script
                     </Button>}
 
-                    {!scriptRunning && !submitEnabled &&  <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler} disabled disableElevation startIcon={<PlayIcon />}>
+                    {!scriptRunning && !submitEnabled &&  <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler2} disabled disableElevation startIcon={<PlayIcon />}>
                         Run the script
                     </Button>}
 
-                    {scriptRunning && <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler} disabled disableElevation startIcon={<CircularProgress style={{height: "20px", width : "20px"}} color="secondary"  />}>
+                    {scriptRunning && <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler2} disabled disableElevation startIcon={<CircularProgress style={{height: "20px", width : "20px"}} color="secondary"  />}>
                         Executing the Script...
                     </Button>}
                 </div>}
@@ -634,7 +659,7 @@ export default function RunScraperScript({pageTitle})  {
                     <Button onClick={backButtonHandler} type="button" disabled variant="contained" size="small" style={{}}color="secondary" disableElevation startIcon={<PreviousIcon />} >
                         Back
                     </Button>
-                    {!scriptRunning && <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler} disabled disableElevation startIcon={<PlayIcon />}>
+                    {!scriptRunning && <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler2} disabled disableElevation startIcon={<PlayIcon />}>
                         Run the script
                     </Button>}
                     

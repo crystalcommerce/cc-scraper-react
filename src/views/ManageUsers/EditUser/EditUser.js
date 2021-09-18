@@ -123,7 +123,6 @@ export default function EditUser({loggedUser, user, editUserSetter, userSetter, 
     }
 
     useEffect(() => {
-        console.log(currentUser);
 
         return () => abortCont.abort();
 

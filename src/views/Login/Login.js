@@ -102,7 +102,7 @@ export default function Login() {
                             {/* {schemaError && <p className={styles["error-message"]}>{schemaError}</p>} */}
                         </FormControl>
                         <FormControl fullWidth>
-                            <TextField type="password" value={password}onChange={onChangeHandler.bind(this, "password")} label="Password" />
+                            <TextField type="password" autoComplete="on" value={password}onChange={onChangeHandler.bind(this, "password")} label="Password" />
                             {/* {schemaError && <p className={styles["error-message"]}>{schemaError}</p>} */}
                         </FormControl>
                         {!loggingIn && <Button variant="contained" size="large" color="primary" disableElevation startIcon={<ExitToAppIcon />} type="submit">Login</Button>}
