@@ -417,16 +417,15 @@ export default function RunScraperScript({pageTitle})  {
         }
     }, []);
 
-    
+
 
     // prevent navigation while script running
     useEffect(() => {
-        
         function removeClick(e) {
             e.preventDefault()
             alert("Please do not navigate to any page while the script is running... try opening the pages on new tabs");
         }
-        if(scriptRunning)   {
+        if(!scriptRunning)   {
             Array.from(document.querySelectorAll("a")).forEach(item => {
                 item.addEventListener("click", removeClick);
             });

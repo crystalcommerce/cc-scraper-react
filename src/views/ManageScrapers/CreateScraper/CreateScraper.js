@@ -5,7 +5,6 @@ import { useHistory } from "react-router-dom";
 // hooks
 import useAuth from "../../../hooks/useAuth";
 import useFetch from "../../../hooks/useFetch";
-import useAccessCheck from "../../../hooks/useAccessCheck";
 
 // Components
 import Card from "../../../components/Card";
@@ -44,11 +43,7 @@ import styles from "./CreateScraper.module.scss";
 import { baseUrl } from "../../../config/"; 
 import { toNormalString } from "../../../utilities/string";
 
-
 export default function CreateScraper({pageTitle}) {
-
-    useAccessCheck(3);
-
 
     let {authToken} = useAuth(),
         abortCont = new AbortController(),

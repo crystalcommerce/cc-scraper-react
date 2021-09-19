@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/static/css/main.bc94ab78.chunk.css",
+    "main.js": "/static/js/main.d1fe7e9d.chunk.js",
+    "main.js.map": "/static/js/main.d1fe7e9d.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.75757904.js",
+    "runtime-main.js.map": "/static/js/runtime-main.75757904.js.map",
+    "static/css/2.189ab08d.chunk.css": "/static/css/2.189ab08d.chunk.css",
+    "static/js/2.891f818b.chunk.js": "/static/js/2.891f818b.chunk.js",
+    "static/js/2.891f818b.chunk.js.map": "/static/js/2.891f818b.chunk.js.map",
+    "index.html": "/index.html",
+    "static/css/2.189ab08d.chunk.css.map": "/static/css/2.189ab08d.chunk.css.map",
+    "static/css/main.bc94ab78.chunk.css.map": "/static/css/main.bc94ab78.chunk.css.map",
+    "static/js/2.891f818b.chunk.js.LICENSE.txt": "/static/js/2.891f818b.chunk.js.LICENSE.txt",
+    "static/media/index.css": "/static/media/Sacramento-Regular.8e499a8c.ttf",
+    "static/media/logo.07fa326a.png": "/static/media/logo.07fa326a.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.75757904.js",
+    "static/css/2.189ab08d.chunk.css",
+    "static/js/2.891f818b.chunk.js",
+    "static/css/main.bc94ab78.chunk.css",
+    "static/js/main.d1fe7e9d.chunk.js"
+  ]
+}
