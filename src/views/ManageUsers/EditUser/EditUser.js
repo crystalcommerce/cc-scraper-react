@@ -27,6 +27,7 @@ export default function EditUser({loggedUser, user, editUserSetter, userSetter, 
         [initialValue, setInitialValue] = useState({...user}),
         [currentUser, setCurrentUser] = useState(user),
         selectOptions = [
+            { name : "Guest", value : 1 },
             { name : "Staff", value : 2 },
             { name : "Developer", value : 3 },
             { name : "Administrator", value : 4 },

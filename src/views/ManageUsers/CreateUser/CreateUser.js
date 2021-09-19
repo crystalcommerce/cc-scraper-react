@@ -302,7 +302,7 @@ export default function CreateUser({pageTitle})    {
                                     {passwordMessage && <p className={styles[`${passwordMessageType}-message`]}>{passwordMessage}</p>}
                                 </FormControl>
                                 <FormControl fullWidth className={styles["permissionLevel"]}>
-                                    <Select defaultValue={selectOptions.find(item => item.value === user.permissionLevel)} selectOnchangeHandler={selectOnChangeHandler} label="Permission / Access Level" options={selectOptions} uniqueProp="value" optionLabelProp="name" ></Select>
+                                    <Select defaultValue={selectOptions[0]} selectOnchangeHandler={selectOnChangeHandler} label="Permission / Access Level" options={selectOptions} uniqueProp="value" optionLabelProp="name" ></Select>
                                 </FormControl>
                             </div>
                             

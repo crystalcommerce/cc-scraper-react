@@ -533,7 +533,7 @@ export default function RunScraperScript({pageTitle})  {
                         <>
                             <h6 className={styles["template-section-title"]}>{toCapitalizeAll(toNormalString(currentProcess.phase, "url"))} - Total number of products to scrape : <span className={styles["highlighted-2"]}>{productsTotal}</span></h6>
                             <h6 className={styles["template-section-title"]}>We are currently rescraping : <span className={styles["highlighted-2"]}>{totalScrapedData}</span> / <span className={styles["highlighted-2"]}>{totalUnscrapedData}</span> </h6>
-                            <p className={styles["highlighted-2"]} style={{fontSize: ".8rem"}}>By default we are rescraping the unscraped data, until we at least have 5 rows of unscraped data left or lower; or if we have done rescraping the data for at least 5 times.</p>
+                            <p className={styles["highlighted-2"]} style={{fontSize: ".8rem"}}>By default we are rescraping data, until we have 5 or lower rows of unscraped data left; or if we have done rescraping the data for at least 5 times.</p>
                         </>
                     }
                     {!rescraping && currentProcess && currentProcess.phase === "image-download" &&
