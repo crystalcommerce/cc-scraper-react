@@ -38,7 +38,7 @@ const socket = io(`${socketUrl}`);
 
 
 export default function RunScraperScript({pageTitle})  {
-
+    
     let {authToken, fileToken} = useAuth(),
         history = useHistory(),
         {id} = useParams(),
@@ -84,7 +84,7 @@ export default function RunScraperScript({pageTitle})  {
         [totalScrapedData, setTotalScrapedData] = useState(0),
         [totalUnscrapedData, setTotalUnscrapedData] = useState(0),
         [currentShownData, setCurrentShownData] = useState([]),
-        [productsTotal, setProductsTotal] = useState(null),
+        [productsTotal, setProductsTotal] = useState(0),
 
 
         [progress, setProgress] = useState(0),
@@ -117,10 +117,12 @@ export default function RunScraperScript({pageTitle})  {
     const runScraperScriptHandler = (e) => {
         e.preventDefault();
 
+        resetStates();
+
         // reset the other states for downloading process.
         setCurrentScrapedProducts(prev => null);
         setCurrentShownData(prev => []);
-        setProductsTotal(prev => null);
+        setProductsTotal(prev => 0);
 
         setScrapedData(null);
         setUnscrapedData(null);
@@ -132,6 +134,32 @@ export default function RunScraperScript({pageTitle})  {
 
         socket.emit("run-script", {scraperId : id, groupIdentifier, productsListEvaluatorUris, evaluatorArgs});
 
+    }
+
+    const resetStates = () => {
+
+        setScriptRunning(prev => false);
+        setScrapingMessage(prev => null);
+        setScrapingStatus(prev => null);
+
+        setScriptId(null);
+
+        setScrapedData(null);
+        setUnscrapedData(null);
+
+        setCurrentProcess(prev => null);
+        setCurrentScrapedProducts(0);
+        setRescraping(false);
+        setTotalScrapedData(0);
+        setTotalUnscrapedData(null);
+        setCurrentShownData([]);
+        setProductsTotal(0);
+        setProgress(0);
+        
+        setDownloadingZip(false);
+        setSavingToDb(false);
+        setSavingDataMessage(null);
+        setSavingDataStatus(null);
     }
 
     
@@ -150,9 +178,7 @@ export default function RunScraperScript({pageTitle})  {
 
     //script-initialization-ready
     socket.off("script-initialization-ready").on("script-initialization-ready", function(data)  {
-        console.log(data);
         setScriptId(prev => {
-
             setScriptRunning(prev => true);
             setScrapingStatus("info");
             setScrapingMessage(`We are now scraping the data for ${productBrand} - ${groupIdentifier} from ${siteName}`);
@@ -206,8 +232,7 @@ export default function RunScraperScript({pageTitle})  {
     });
 
     // rescraping single-product pages
-    socket.off("set-rescraping").on("set-rescraping", function(data)  {
-
+    socket.on("set-rescraping", function(data)  {
         if(scriptId === data.scriptId)  {
             setRescraping(prev => true);
             if(data.totalUnscrapedData > 0 && totalUnscrapedData !== data.totalUnscrapedData)    {
@@ -221,7 +246,7 @@ export default function RunScraperScript({pageTitle})  {
     });
 
     // rescraping single-product pages
-    socket.off("data-rescraping").on("data-rescraping", function(data)  {
+    socket.on("data-rescraping", function(data)  {
         if(scriptId === data.scriptId)  {
             if(currentProcess && typeof currentProcess.phase !== "undefined" && currentProcess.phase === "data-scraping") {
                 setCurrentProcess(prev => data);
@@ -259,11 +284,23 @@ export default function RunScraperScript({pageTitle})  {
             setCurrentProcess(prev => null);
             setScrapedData(data.data);
             setUnscrapedData(data.unscrapedData);
+            
         }
     });
 
+    socket.off("connect").on("connect", () => {
+        setScrapingMessage(prev => "We are now ready to start scraping");
+        setScrapingStatus(prev => "success");
+        setScriptRunning(false);
+    }) 
 
-    
+    socket.off("disconnect").on("disconnect", () => {
+        resetStates();
+
+        setScriptRunning(prev => false);
+        setScrapingMessage(prev => "You have been disconnected from the server.");
+        setScrapingStatus(prev => "error");
+    });
 
 
 
@@ -272,8 +309,7 @@ export default function RunScraperScript({pageTitle})  {
     const downloadZipHandler = (e) => {
         e.preventDefault();
         setDownloadingZip(true);
-
-        socket.emit("run-script", { scriptId });
+        
 
         fetch(`${baseUrl}/api/script/create-csv/${scriptId}`, {
             method : "GET",
@@ -497,7 +533,7 @@ export default function RunScraperScript({pageTitle})  {
                         <>
                             <h6 className={styles["template-section-title"]}>{toCapitalizeAll(toNormalString(currentProcess.phase, "url"))} - Total number of products to scrape : <span className={styles["highlighted-2"]}>{productsTotal}</span></h6>
                             <h6 className={styles["template-section-title"]}>We are currently rescraping : <span className={styles["highlighted-2"]}>{totalScrapedData}</span> / <span className={styles["highlighted-2"]}>{totalUnscrapedData}</span> </h6>
-                            <p>By default we are rescraping the unscraped data, until we at least have 5 rows of unscraped data left or lower; or if we have done rescraping the data for at least 5 times.</p>
+                            <p className={styles["highlighted-2"]} style={{fontSize: ".8rem"}}>By default we are rescraping the unscraped data, until we at least have 5 rows of unscraped data left or lower; or if we have done rescraping the data for at least 5 times.</p>
                         </>
                     }
                     {!rescraping && currentProcess && currentProcess.phase === "image-download" &&
