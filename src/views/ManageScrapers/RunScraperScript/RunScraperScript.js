@@ -114,7 +114,7 @@ export default function RunScraperScript({pageTitle})  {
     }
 
 
-    const runScraperScriptHandler = (e) => {
+    const runScraperScriptHandler2 = (e) => {
         e.preventDefault();
 
         // reset the other states for downloading process.
@@ -134,137 +134,86 @@ export default function RunScraperScript({pageTitle})  {
 
     }
 
-    
-    /* SOCKET IO CONNECTION */
-    /*
-        script-initialization-ready
-        script-initialization-error
-        initializing
-        list-evaluator-finished
-        data-scraping
-        data-rescraping
-        set-rescraping
-        image-downloading
-        finished-scraping
-    */
+    // bottom buttons event handlers       
+    const runScraperScriptHandler = (e) => {
+        e.preventDefault()
 
-    //script-initialization-ready
-    socket.off("script-initialization-ready").on("script-initialization-ready", function(data)  {
-        console.log(data);
-        setScriptId(prev => {
+        // reset the other states for downloading process.
+        setCurrentScrapedProducts(prev => null);
+        setCurrentShownData(prev => []);
+        setProductsTotal(prev => null);
 
-            setScriptRunning(prev => true);
-            setScrapingStatus("info");
-            setScrapingMessage(`We are now scraping the data for ${productBrand} - ${groupIdentifier} from ${siteName}`);
+        setScrapedData(null);
+        setUnscrapedData(null);
+
+        setScriptRunning(prev => true);
+        setScrapingMessage(prev => "Currently running the script...");
+        setScrapingStatus(prev => "info");
 
 
-           return data.scriptId;
-        });
-        socket.emit("initialize", {status : 200, message : "Ready to scrape data."});
-    });
-
-    // Error
-    socket.off("script-initialization-error").on("script-initialization-error", function(data)  {
-        if(scriptId === data.scriptId)  {
-            setScriptRunning(prev => false);
-            setScrapingMessage(prev => data.message);
-            setScrapingStatus(prev => "error");
-        }
-    });
+        
 
 
-    // handling script running events;
-    socket.off("initializing").on("initializing", function(data)  {
-        if(scriptId === data.scriptId)  {
-            setCurrentProcess(prev => data);
-        }
-    });
-
-    // initial evaluator finished
-    socket.off("list-evaluator-finished").on("list-evaluator-finished", function(data)  {
-        if(scriptId === data.scriptId)  {
-            setCurrentProcess(prev => data);
-            if(data.totalProducts)  {
-                setProductsTotal(prev => data.totalProducts)
-            }
-        }
-    });
-
-    // initial single-product-scraping
-    socket.off("data-scraping").on("data-scraping", function(data)  {
-        if(scriptId === data.scriptId)  {
-            if(currentProcess && typeof currentProcess.phase !== "undefined" && currentProcess.phase === "initial-scraping") {
-                setCurrentProcess(prev => data);
-            }
-            if(data.totalScrapedData > totalScrapedData)  {
-                setTotalScrapedData(prev => {
-                    return data.totalScrapedData;
-                });
-                setProgress(prev => (Number(data.totalScrapedData) / Number(productsTotal)) * 100 );
-            }
-        }
-    });
-
-    // rescraping single-product pages
-    socket.off("set-rescraping").on("set-rescraping", function(data)  {
-
-        if(scriptId === data.scriptId)  {
-            setRescraping(prev => true);
-            if(data.totalUnscrapedData > 0 && totalUnscrapedData !== data.totalUnscrapedData)    {
-                setTotalUnscrapedData(prev => data.totalUnscrapedData);
-                setTotalScrapedData(prev => {
-                    return data.totalScrapedData;
-                });
-                setProgress(prev => (Number(data.totalScrapedData) / Number(data.totalUnscrapedData)) * 100 );
-            }
-        }
-    });
-
-    // rescraping single-product pages
-    socket.off("data-rescraping").on("data-rescraping", function(data)  {
-        if(scriptId === data.scriptId)  {
-            if(currentProcess && typeof currentProcess.phase !== "undefined" && currentProcess.phase === "data-scraping") {
-                setCurrentProcess(prev => data);
-            }
-            if(data.totalScrapedData > totalScrapedData)  {
-                setTotalScrapedData(prev => {
-                    return data.totalScrapedData;
-                });
-
-                setProgress(prev => (Number(data.totalScrapedData) / Number(totalUnscrapedData)) * 100 );
-            }
-        }
-    });
-
-    // image downloading
-    socket.off("image-downloading").on("image-downloading", function(data)  {
-        if(scriptId === data.scriptId)  {
-            if(currentProcess &&  (currentProcess.phase === "data-scraping" || currentProcess.phase === "data-rescraping")) {
-                setCurrentProcess(prev => data);
-            }
-            if(scrapingMessage !== `We are now downloading the images for the scraped the data : ${productBrand} - ${groupIdentifier} from ${siteName}`)    {
-                setScrapingMessage(`We are now downloading the images for the scraped the data : ${productBrand} - ${groupIdentifier} from ${siteName}`);
-            }
-        }
-    });
-
-    // scraping finished;
-    socket.off("finished-scraping").on("finished-scraping", function(data)  {
-        if(scriptId === data.scriptId)  {
-            setScriptRunning(prev => false);
-            setScrapingStatus("success");
-            setScrapingMessage(`We have successfully scraped the data for ${productBrand} - ${groupIdentifier} from ${siteName}`);
+        fetch(`${baseUrl}/api/script/create-script/${id}`, {
+            method : "POST",
+            headers : {
+                "Content-type" : "application/json",
+                "x-auth-token" : authToken,
+            },
+            body : JSON.stringify({groupIdentifier, productsListEvaluatorUris, evaluatorArgs}),
+            signal : abortCont.signal,
+        })
+            .then(res => {
+                if(res.ok)  {
+                    return res.json()
+                } else  {
+                    throw Error("We couldn't reach the server");
+                }
+            })
+            .then(data => {
+                setScriptId(prev => data.scriptId);
+                setTimeout(() => {
+                    fetch(`${baseUrl}/api/script/execute-script/${data.scriptId}`, {
+                        method : "POST",
+                        headers : {
+                            "Content-type" : "application/json",
+                            "x-auth-token" : authToken,
+                        },
+                        signal : abortCont.signal,
+                    })
+                        .then(res => {
+                            if(!res.ok)  {
+                               throw Error("We couldn't reach the server."); 
+                            }
+                            return res.json();
+                        })
+                        .then(data => {
+                            setScriptRunning(prev => true);
+                            setScrapingStatus("info");
+                            setScrapingMessage(`We are now scraping the data for ${productBrand} - ${groupIdentifier} from ${siteName}`);
 
 
-            setCurrentProcess(prev => null);
-            setScrapedData(data.data);
-            setUnscrapedData(data.unscrapedData);
-        }
-    });
+                        })
+                        .catch(err => {
+                            if(err.name !== "AbortError")   {
+                                setScriptRunning(prev => false); 
+                                setScrapingMessage(err.message);
+                                setScrapingStatus("error");
+                            }
+                            
+                        });
+                }, 1500);
+                
 
-
-    
-
+            })
+            .catch(err => {
+                if(err.name !== "AbortError")   {
+                    setScriptRunning(prev => false);
+                    setScrapingMessage(err.message);
+                    setScrapingStatus(prev => "error");
+                }
+            });
+    }
 
 
     // action button events handler
@@ -273,7 +222,6 @@ export default function RunScraperScript({pageTitle})  {
         e.preventDefault();
         setDownloadingZip(true);
 
-        socket.emit("run-script", { scriptId });
 
         fetch(`${baseUrl}/api/script/create-csv/${scriptId}`, {
             method : "GET",
@@ -415,6 +363,8 @@ export default function RunScraperScript({pageTitle})  {
                     }
                 });
         }
+
+        
     }, []);
 
 
@@ -442,8 +392,83 @@ export default function RunScraperScript({pageTitle})  {
         }
     }, [scriptRunning]);
 
+    /* SOCKET IO CONNECTION */
+    // socket.on("connection")
+    socket.on("current-process", (data) => {
+
+        if(scriptId === data.scriptId)  {
     
-    
+            if(data.phase === "initial-scraping")   {
+
+                setCurrentProcess(prev => data);
+                if(data.totalProducts)  {
+                    setProductsTotal(prev => data.totalProducts)
+                }
+            }
+
+            if(data.phase === "data-scraping")  {
+                if(currentProcess && typeof currentProcess.phase !== "undefined" && currentProcess.phase === "initial-scraping") {
+                    setCurrentProcess(prev => data);
+                }
+                if(data.totalScrapedData > totalScrapedData)  {
+                    setTotalScrapedData(prev => {
+                        return data.totalScrapedData;
+                    });
+                    setProgress(prev => (Number(data.totalScrapedData) / Number(productsTotal)) * 100 );
+                }
+                
+            }
+
+
+            if(data.phase === "set-rescraping") {
+                setRescraping(prev => true);
+                if(data.totalUnscrapedData > 0 && totalUnscrapedData !== data.totalUnscrapedData)    {
+                    setTotalUnscrapedData(prev => data.totalUnscrapedData);
+                    setTotalScrapedData(prev => {
+                        return data.totalScrapedData;
+                    });
+                    setProgress(prev => (Number(data.totalScrapedData) / Number(data.totalUnscrapedData)) * 100 );
+                }
+            }
+
+
+            if(data.phase === "data-rescraping")    {
+                if(currentProcess && typeof currentProcess.phase !== "undefined" && currentProcess.phase === "data-scraping") {
+                    setCurrentProcess(prev => data);
+                }
+                if(data.totalScrapedData > totalScrapedData)  {
+                    setTotalScrapedData(prev => {
+                        return data.totalScrapedData;
+                    });
+
+                    setProgress(prev => (Number(data.totalScrapedData) / Number(totalUnscrapedData)) * 100 );
+                }
+            }
+
+
+            if(data.phase === "image-downloading")   {
+                if(currentProcess &&  (currentProcess.phase === "data-scraping" || currentProcess.phase === "data-rescraping")) {
+                    setCurrentProcess(prev => data);
+                }
+                if(scrapingMessage !== `We are now downloading the images for the scraped the data : ${productBrand} - ${groupIdentifier} from ${siteName}`)    {
+                    setScrapingMessage(`We are now downloading the images for the scraped the data : ${productBrand} - ${groupIdentifier} from ${siteName}`);
+                }
+                
+            }
+
+            if(data.phase === "finalizing")  {
+                setScriptRunning(prev => false);
+                setScrapingStatus("success");
+                setScrapingMessage(`We have successfully scraped the data for ${productBrand} - ${groupIdentifier} from ${siteName}`);
+
+
+                setCurrentProcess(prev => null);
+                setScrapedData(data.data);
+                setUnscrapedData(data.unscrapedData);
+
+            }
+        }
+    });
     return (
         <EmptyCardFlex className={styles["main-container"]}>
             {/* <pre style={{wordBreak : "break-word"}}>
@@ -615,15 +640,15 @@ export default function RunScraperScript({pageTitle})  {
                     </Button>}
 
 
-                    {!scriptRunning && submitEnabled &&  <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler} disableElevation startIcon={<PlayIcon />} style={{color : "white", backgroundColor : "green"}}>
+                    {!scriptRunning && submitEnabled &&  <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler2} disableElevation startIcon={<PlayIcon />} style={{color : "white", backgroundColor : "green"}}>
                         Run the script
                     </Button>}
 
-                    {!scriptRunning && !submitEnabled &&  <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler} disabled disableElevation startIcon={<PlayIcon />}>
+                    {!scriptRunning && !submitEnabled &&  <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler2} disabled disableElevation startIcon={<PlayIcon />}>
                         Run the script
                     </Button>}
 
-                    {scriptRunning && <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler} disabled disableElevation startIcon={<CircularProgress style={{height: "20px", width : "20px"}} color="secondary"  />}>
+                    {scriptRunning && <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler2} disabled disableElevation startIcon={<CircularProgress style={{height: "20px", width : "20px"}} color="secondary"  />}>
                         Executing the Script...
                     </Button>}
                 </div>}
@@ -633,7 +658,7 @@ export default function RunScraperScript({pageTitle})  {
                     <Button onClick={backButtonHandler} type="button" disabled variant="contained" size="small" style={{}}color="secondary" disableElevation startIcon={<PreviousIcon />} >
                         Back
                     </Button>
-                    {!scriptRunning && <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler} disabled disableElevation startIcon={<PlayIcon />}>
+                    {!scriptRunning && <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler2} disabled disableElevation startIcon={<PlayIcon />}>
                         Run the script
                     </Button>}
                     
