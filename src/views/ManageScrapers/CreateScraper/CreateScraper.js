@@ -78,7 +78,7 @@ export default function CreateScraper({pageTitle}) {
                 shared : [],
                 split : [],
             },
-            csvExcludedProps : ["imageUris", "imagePaths"],
+            csvExcludedProps : ["imageUris", "imagePaths", "multiFaced", "_id", "dateCreated", "__v", "friendlyUrl"],
         }),
         [scraperDetailsReady, setScraperDetailsReady] = useState(false),
 
