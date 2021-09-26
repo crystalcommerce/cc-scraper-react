@@ -15,6 +15,7 @@ import Alert from '@material-ui/lab/Alert';
 import PlayIcon from '@material-ui/icons/PlayArrow';
 import DownloadIcon from '@material-ui/icons/GetApp';
 import SaveIcon from '@material-ui/icons/Save';
+import EditIcon from '@material-ui/icons/Edit';
 import PreviousIcon from '@material-ui/icons/NavigateBefore';
 import MuiTable from "../../../components/MuiTable";
 
@@ -91,6 +92,10 @@ export default function RunScraperScript({pageTitle})  {
 
         [runningScriptObject, setRunningScriptObject] = useState(null),
 
+        // fixing the scripts
+        [fixingScript, setFixingScript] = useState(false),
+        [fixScriptButtonEnabled, setFixScriptButtonEnabled] = useState(false),
+
         abortCont = new AbortController();
 
 
@@ -133,6 +138,32 @@ export default function RunScraperScript({pageTitle})  {
 
 
         socket.emit("run-script", {scraperId : id, groupIdentifier, productsListEvaluatorUris, evaluatorArgs});
+
+    }
+
+    const scriptRewriteHandler = () => {
+        setScrapingMessage("Currently fixing the script...");
+        setScrapingStatus("info");
+        setFixingScript(true);
+
+        fetch(`${baseUrl}/api/scrapers/${id}`, {
+            method : "POST",
+            headers : {
+                "Content-type" : "application/json",
+                "x-auth-token" : authToken,
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                setScrapingMessage(data.message);
+                setScrapingStatus("success");
+                setFixingScript(false);
+            })
+            .catch(err => {
+                setScrapingMessage(err.message);
+                setScrapingStatus("error");
+                setFixingScript(false);
+            })
 
     }
 
@@ -191,11 +222,15 @@ export default function RunScraperScript({pageTitle})  {
 
     // Error
     socket.off("script-initialization-error").on("script-initialization-error", function(data)  {
-        if(scriptId === data.scriptId)  {
-            setScriptRunning(prev => false);
-            setScrapingMessage(prev => data.message);
-            setScrapingStatus(prev => "error");
+        // if(scriptId === data.scriptId)  {
+        setScriptRunning(prev => false);
+        setScrapingMessage(prev => data.message);
+        setScrapingStatus(prev => "error");
+        if(data.message.toLowerCase().includes("cannot find module"))   {
+            setFixScriptButtonEnabled(true);
+            console.log("fix must be enabled..");
         }
+        // }
     });
 
 
@@ -643,8 +678,46 @@ export default function RunScraperScript({pageTitle})  {
 
                 <Divider style={{margin : "1.4rem 0"}} />
                 {scraperData._id && <div className={styles["buttons-container"]}>
+
+                    {!scriptRunning && !fixingScript &&
+                        <>
+                            <Button onClick={backButtonHandler} type="button" variant="contained" size="small" style={{}}color="secondary" disableElevation startIcon={<PreviousIcon />} >
+                                Back
+                            </Button>
+                            {
+                                submitEnabled && <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler} disableElevation startIcon={<PlayIcon />} style={{color : "white", backgroundColor : "green"}}>
+                                    Run the script
+                                </Button>
+                            }
+                            {
+                                !submitEnabled && <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler} disabled disableElevation startIcon={<PlayIcon />}>
+                                    Run the script
+                                </Button>
+                            }
+                        </>
+                    }
+
+                    {
+                        (scriptRunning || fixingScript) && 
+                        <>
+                            <Button onClick={backButtonHandler} type="button" disabled variant="contained" size="small" style={{}}color="secondary" disableElevation startIcon={<PreviousIcon />} >
+                                Back
+                            </Button>
+                            {   
+                                !fixingScript && <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler} disabled disableElevation startIcon={<CircularProgress style={{height: "20px", width : "20px"}} color="secondary"  />}>
+                                    Executing the Script...
+                                </Button>
+                            }
+                            {   
+                                fixingScript && <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler} disabled disableElevation startIcon={<PlayIcon />}>
+                                    Run the Script
+                                </Button>
+                            }
+                        </>
+                    }
+
                     
-                    {scriptRunning && <Button onClick={backButtonHandler} type="button" disabled variant="contained" size="small" style={{}}color="secondary" disableElevation startIcon={<PreviousIcon />} >
+                    {/* {scriptRunning && <Button onClick={backButtonHandler} type="button" disabled variant="contained" size="small" style={{}}color="secondary" disableElevation startIcon={<PreviousIcon />} >
                         Back
                     </Button>}
                     {!scriptRunning && <Button onClick={backButtonHandler} type="button" variant="contained" size="small" style={{}}color="secondary" disableElevation startIcon={<PreviousIcon />} >
@@ -662,6 +735,23 @@ export default function RunScraperScript({pageTitle})  {
 
                     {scriptRunning && <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler} disabled disableElevation startIcon={<CircularProgress style={{height: "20px", width : "20px"}} color="secondary"  />}>
                         Executing the Script...
+                    </Button>} */}
+
+
+                    {/* quick script fix */}
+                    {fixScriptButtonEnabled && 
+                    
+                    <>
+                        {fixingScript && <Button type="button" variant="contained" size="small" color="primary" onClick={scriptRewriteHandler}  disableElevation disabled startIcon={<CircularProgress style={{height: "20px", width : "20px"}} color="secondary"  />}>
+                            Fixing the script
+                        </Button>}
+                        {!fixingScript && <Button type="button" variant="contained" size="small" style={{backgroundColor : "#4c7dab", color : "white"}} onClick={scriptRewriteHandler} disableElevation startIcon={<EditIcon />}>
+                            Automated Script Fix
+                        </Button>}
+                    </>
+                    }
+                    {!fixScriptButtonEnabled && <Button type="button" variant="contained" size="small" color="primary" onClick={scriptRewriteHandler} disabled disableElevation startIcon={<EditIcon />}>
+                        Automated Script Fix
                     </Button>}
                 </div>}
 
