@@ -9,6 +9,8 @@ import  { baseUrl } from "../../../config";
 import Card from "../../../components/Card";
 import EmptyCardFlex from "../../../components/EmptyCardFlex";
 import MuiTable from "../../../components/MuiTable";
+import Alert from '@material-ui/lab/Alert';
+import { CircularProgress } from '@material-ui/core';
 
 
 // styles
@@ -19,25 +21,32 @@ export default function ManageScrapedData({pageTitle}) {
 
     let { authToken } = useAuth(),
         { apiRoute } = useParams(),
-        { data : scraperDetails } = useFetch(`/api/scrapers/single?apiRoute=/api/${apiRoute}`),
+        { data : productSet } = useFetch(`/api/product-sets/single?apiRoute=/api/${apiRoute}`),
         [productData, setProductData] = useState(null),
         [siteName, setSiteName] = useState(""),
         [productBrand, setProductBrand] = useState(""),
+
+
+
+        [message, setMessage] = useState(null),
+        [status, setStatus] = useState(null),
         [isLoading, setIsLoading] = useState(false),
         [hasError, setHasError] = useState(false),
         abortCont = new AbortController();
         
 
     useEffect(() => {
-        if(scraperDetails.apiRoute)    {
+        if(productSet.apiRoute)    {
             let queryString = window.location.search;
 
-            setIsLoading("We are currently loading the data...");
-            setSiteName(prev => scraperDetails.siteName);
-            setProductBrand(prev => scraperDetails.productBrand);
+            setMessage("We are currently loading the data...");
+            setStatus("info");
+            setIsLoading(true);
+            setSiteName(prev => productSet.siteName);
+            setProductBrand(prev => productSet.productBrand);
 
 
-            fetch(`${baseUrl}${scraperDetails.apiRoute}/all${queryString}`, {
+            fetch(`${baseUrl}${productSet.apiRoute}/all${queryString}`, {
                 method : "GET",
                 headers : {
                     "x-auth-token" : authToken,
@@ -46,41 +55,45 @@ export default function ManageScrapedData({pageTitle}) {
             })
                 .then(res => res.json())
                 .then(dataObject => {
-                    setIsLoading(false);
-                    
+
                     if(Array.isArray(dataObject))    {
-                        setHasError(false);
                         setProductData(prev => dataObject);
                     } else  {
                         throw Error(dataObject.message)
                     }
+
+                    setMessage("All data shown here are the ones we just saved into our database.");
+                    setStatus("success");
+                    setIsLoading(false);
+                    
+                    
                 })
                 .catch(err => {
                     if(err.name !== "AbortError")   {
-                        setHasError(err.message);
+                        setMessage("We have successfully fetched the data from the database.");
+                        setStatus("error");
+                        setIsLoading(false);
                     }
                 })
         }
 
 
         return () => abortCont.abort();
-    }, [scraperDetails])
+    }, [productSet])
 
     return  (
         <>  
             
 
             <EmptyCardFlex className={styles["main-container"]}>
-                    
+                {message && <EmptyCardFlex style={{padding : ".7rem 0"}}>
+                    <Alert severity={status}>{isLoading && <CircularProgress style={{height: "20px", width : "20px"}}></CircularProgress>}{message}</Alert>
+                </EmptyCardFlex>}
                 <Card>
-                    {siteName && !isLoading && !hasError &&
+                    {siteName && 
                         <h1 className="page-title">{siteName} - <span className={styles["highlighted"]}>{productBrand}</span></h1>}
-                    {!siteName && !isLoading && !hasError &&
+                    {!siteName && !message &&
                         <h1 className="page-title">{pageTitle}</h1>}
-                    {isLoading && !hasError && <h1 className="page-title">{isLoading}</h1>}
-                    {hasError && <h1 className="page-title">{hasError}</h1>}
-
-
                     {productData && <MuiTable tableData={productData} uniqueId="_id" excludedColumns={["imageUris", "dateCreated", "cardUri", "__v", "productUri", "multiFaced"]}></MuiTable>}
                 </Card>
             </EmptyCardFlex>  

@@ -8,10 +8,13 @@ import useFetch from "../../hooks/useFetch";
 import Card from "../../components/Card";
 import EmptyCardFlex from "../../components/EmptyCardFlex";
 import MuiTable from "../../components/MuiTable";
-import { Button, FormControl, CircularProgress } from '@material-ui/core';
+import { Button, FormControl, CircularProgress, Modal, Divider } from '@material-ui/core';
+import Cancel from '@material-ui/icons/Cancel';
 import Alert from '@material-ui/lab/Alert';
 import DownloadIcon from '@material-ui/icons/GetApp';
+import DeleteIcon from '@material-ui/icons/Delete';
 import Select from "../../components/Select";
+import Check from '@material-ui/icons/Check';
 
 
 //config
@@ -29,8 +32,8 @@ export default function ManageScrapedData({pageTitle}) {
 
         // collections of data
         {data : siteResources, fetchMessage, isLoading : fetchLoading} = useFetch(`/api/site-resources/`, {}, []),
-        {data : scrapers } = useFetch(`/api/scrapers/`, {}, []),
-        {data : productSets} = useFetch(`/api/product-sets`, {}, []),
+        {data : scrapers, setData : setScrapers } = useFetch(`/api/scrapers/`, {}, []),
+        {data : productSets, setData : setProductSets } = useFetch(`/api/product-sets`, {}, []),
         
 
         // filtered data
@@ -51,6 +54,9 @@ export default function ManageScrapedData({pageTitle}) {
         [message, setMessage] = useState(null),
         [status, setStatus] = useState(null),
         [downloadingZip, setDownloadingZip] = useState(false),
+        
+        // deleting data;
+        [modalOpen, setModalOpen] = useState(false),
 
         // abort Controller
         abortCont = new AbortController();
@@ -62,7 +68,7 @@ export default function ManageScrapedData({pageTitle}) {
     const selectSiteResourceHandler = (value) => {
         setSiteResource(prev => siteResources.find(item => item.siteName === value));
         setFilteredScrapers(prev => {
-            return scrapers.filter(item => item.siteName === value);
+            return productSets.filter(item => item.siteName === value);
         });
         setFilteredProductSets(prev => []);
         setProductSet(prev => null);
@@ -72,7 +78,7 @@ export default function ManageScrapedData({pageTitle}) {
 
     // set productBrand by select
     const selectScraperHandler = (value) => {
-        setScraper(prev => filteredScrapers.find(item => item.productBrand === value));
+        setScraper(prev => productSets.find(item => item.productBrand === value));
         setFilteredProductSets(prev => {
             return productSets.filter(item => item.productBrand === value)
         });
@@ -103,8 +109,7 @@ export default function ManageScrapedData({pageTitle}) {
         e.preventDefault();
         setDownloadingZip(true);
 
-        let { dataDirPath : dirPath, productBrand, groupIdentifier, siteName } = productSet,
-            { apiRoute } = scraper;
+        let { dataDirPath : dirPath, productBrand, groupIdentifierKey, groupIdentifier, siteName, apiRoute, csvExcludedProps } = productSet;;
         // productsData
             
 
@@ -114,7 +119,7 @@ export default function ManageScrapedData({pageTitle}) {
                 "Content-type" : "application/json",
                 "x-auth-token" : authToken,
             },
-            body : JSON.stringify({dirPath, siteName, productBrand, groupIdentifierKey : scraper.groupIdentifierKey, groupIdentifier, apiRoute, csvExcludedProps : scraper.csvExcludedProps}),
+            body : JSON.stringify({ dirPath, siteName, productBrand, groupIdentifierKey, groupIdentifier, apiRoute, csvExcludedProps }),
             signal : abortCont.signal,
         })
             .then( res => res.json() )
@@ -137,11 +142,66 @@ export default function ManageScrapedData({pageTitle}) {
             .catch(err => {
                 if(err.name !== "AbortError")   {
                     setDownloadingZip(false);
-                    console.log(err.message);
                 }
             });
     }
 
+    const modalSetter = (value) => {
+        setModalOpen(prev => value);
+    }
+
+    const deleteDataHandler = () => {
+        setIsLoading(prev => true);
+        setStatus(prev => "info");
+
+        fetch(`${baseUrl}${productSet.apiRoute}/all?${productSet.groupIdentifierKey}=${productSet.groupIdentifier}`,{
+            method : "DELETE",
+            headers : {
+                "Content-type" : "application/json",
+                "x-auth-token" : authToken,
+            },
+            signal : abortCont.signal,
+        })
+            .then(res => res.json())
+            .then(data => {
+
+                fetch(`${baseUrl}/api/product-sets/${productSet._id}`,  {
+                    method : "DELETE",
+                    headers : {
+                        "Content-type" : "application/json",
+                        "x-auth-token" : authToken,
+                    },
+                    signal : abortCont.signal,
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        setIsLoading(prev => false);
+                        setStatus(prev => "success");
+                        setMessage(prev => `We have successfully deleted the ${productSet.groupIdentifierKey} : ${productSet.groupIdentifier}`);
+                        setFilteredProductSets(prev => []);
+                        setProductsData(prev => []);
+                        setModalOpen(prev => false);
+                        setProductSet(prev => null);
+                        setProductSets(prev => []);
+                    })
+                    .catch(err => {
+                        if(err.name !== "AbortError")   {
+                            setIsLoading(prev => false);
+                            setStatus(prev => "error");
+                            setMessage(prev => err.message);
+                        }
+                    });
+
+
+            })
+            .catch(err => {
+                if(err.name !== "AbortError")   {
+                    setIsLoading(prev => false);
+                    setStatus(prev => "error");
+                    setMessage(prev => err.message);
+                }
+            });
+    }
 
     // side effects
 
@@ -195,13 +255,20 @@ export default function ManageScrapedData({pageTitle}) {
                         setStatus(prev => "success");
                         setMessage("Query is valid, although we don't have any saved data for this set of products.");
                     }
-                    
+
+                    setTimeout(() => {
+                        setIsLoading(prev => false);
+                        setStatus(prev => null);
+                        setMessage(prev => null);
+                    }, 1500)
+
                 })
                 .catch(err => {
-                    console.log(err)
-                    // setIsLoading(prev => false);
-                    // setStatus(prev => "error");
-                    // setMessage(err.message);
+                    if(err.name !== "AbortError")   {
+                        setIsLoading(prev => false);
+                        setStatus(prev => "error");
+                        setMessage(err.message);
+                    }
                 })
 
         } else  {
@@ -211,6 +278,7 @@ export default function ManageScrapedData({pageTitle}) {
     }, [scraper, productSet]);
 
     useEffect(() => {
+
 
         return () => abortCont.abort();
     }, []); 
@@ -223,8 +291,8 @@ export default function ManageScrapedData({pageTitle}) {
 
             <EmptyCardFlex >
                 <Card>
-                {!siteResource && !isLoading && <h3 className={styles["template-section-title"]}>Please use the filter to display data...</h3>}
-                {siteResource && !productSet && !isLoading && productsData.length === 0 && <h3 className={styles["template-section-title"]}>We currently have no data to display</h3>}
+                {!siteResource && !isLoading && productSets.length > 0 && <h3 className={styles["template-section-title"]}>Please use the filter to display data...</h3>}
+                {!isLoading && productSets.length === 0 && <h3 className={styles["template-section-title"]}>We currently have no data to display</h3>}
                 
                 {isLoading && <h3 className={styles["template-section-title"]}>Currently Loading the scraped data</h3>}
 
@@ -237,7 +305,7 @@ export default function ManageScrapedData({pageTitle}) {
                 {/* scraper productBrand productSet */}
                 {scraper && !isLoading && productSet && productsData.length > 0 && <h3 className={styles["template-section-title"]}>Showing the scraped data for <span className={styles["highlighted"]}>{scraper.productBrand}</span> - <span className={styles["highlighted-2"]}>{productSet.groupIdentifier}</span></h3>}
                 <div className={styles["select-container"]}>
-                    {siteResources.length > 0 && scrapers.length > 0 && <FormControl style={{width : "auto"}}>
+                    {siteResources.length > 0 && <FormControl style={{width : "auto"}}>
                         <Select value={siteResource} selectOnchangeHandler={selectSiteResourceHandler} label="Site Resource" options={siteResources.map(item=> ({...item, labelName : `${item.siteName} - ${item.siteUrl}`}))} uniqueProp="siteName" optionLabelProp="labelName" ></Select>
                     </FormControl>
                     }
@@ -278,20 +346,83 @@ export default function ManageScrapedData({pageTitle}) {
                 <Card>
                     {productSet && <div className={styles["action-buttons-container"]}>
                        
-                        {!downloadingZip && <Button type="button" variant="contained" size="small" color="primary" onClick={downloadZipHandler} disableElevation startIcon={<DownloadIcon />}>
+                        {!downloadingZip && scraper && <Button type="button" variant="contained" size="small" color="primary" onClick={downloadZipHandler} disableElevation startIcon={<DownloadIcon />}>
                             Download CSV files and Images
                         </Button>}
 
                         {downloadingZip && <Button type="button" variant="contained" size="small" color="primary" onClick={downloadZipHandler} disabled disableElevation startIcon={<CircularProgress style={{height: "20px", width : "20px"}} color="secondary"  />}>
                             Downloading CSV files and Images
                         </Button>}
-                        
+
+                        {downloadingZip && <Button type="button" variant="contained" size="small" style={{backgroundColor : "#c56969", color : "white"}} onClick={modalSetter.bind(this, true)} disabled disableElevation startIcon={<DeleteIcon />}>
+                            Delete - {productSet.groupIdentifier || "product set"}
+                        </Button>}
+
+                        {!downloadingZip && <Button type="button" variant="contained" size="small" style={{backgroundColor : "#c56969", color : "white"}} onClick={modalSetter.bind(this, true)} disableElevation startIcon={<DeleteIcon />}>
+                            Delete - {productSet.groupIdentifier || "product set"}
+                        </Button>}
                     </div>}
 
                     <MuiTable tableData={productsData} uniqueId="_id" excludedColumns={["imageUris", "dateCreated", "cardUri", "__v", "productUri", "multiFaced"]}></MuiTable>
 
                 </Card>
             }
+
+
+                    <Modal
+                        aria-labelledby="transition-modal-title"
+                        aria-describedby="transition-modal-description"
+                        onClose={() => modalSetter(false)}
+                        open={modalOpen}
+                        style={{display : "flex", justifyContent : "center", alignItems : "center"}}
+                    >
+    
+                        <Alert severity="error" style={{minHeight : "300px", minWidth : "250px", paddingRight : "2rem"}}>
+                            <h4 style={{color : "rgb(201, 85, 85)"}}className={styles["template-section-title"]}>Deleting Product Set?</h4>
+                            <Divider style={{margin : ".7rem 0 1.4rem"}} />
+                            {!isLoading && <p>Are you sure you want to delete all data from this set - {productSet && productSet.groupIdentifier}?</p>}
+                            {isLoading && <p>Currently deleting all products from this set...</p>}
+                            <div className={styles["buttons-container"]}>
+                                
+                                {!isLoading && !status &&
+                                    <>
+                                    <Button onClick={deleteDataHandler} type="button" variant="contained" size="small" color="default" style={{backgroundColor : "rgb(201, 85, 85)", color : "white"}} disableElevation startIcon={<DeleteIcon />}>
+                                        Delete Product Set
+                                    </Button>
+                                    
+                                    <Button onClick={() =>modalSetter(false)} type="button" variant="contained" size="small" color="default" style={{backgroundColor : "rgb(85 159 171)", color : "white"}} disableElevation startIcon={<Cancel />}>
+                                        Cancel
+                                    </Button>
+                                    </>
+                                }
+
+
+                                {isLoading && 
+                                    <>
+                                        <Button onClick={deleteDataHandler} type="button" variant="contained" size="small" color="default" disabled disableElevation startIcon={<CircularProgress style={{height: "20px", width : "20px"}} />}>
+                                            Deleting Product Set
+                                        </Button>
+                                        <Button onClick={() =>modalSetter(false)} type="button" variant="contained" size="small" color="default" disabled disableElevation startIcon={<Cancel />}>
+                                            Cancel
+                                    </Button>
+                                    </>
+                                }
+
+                                {!isLoading && status === "success" &&
+                                    <>
+                                        <Button onClick={deleteDataHandler} type="button" variant="contained" size="small" color="default" disabled disableElevation startIcon={<Check />}>
+                                            Product Set Deleted
+                                        </Button>
+                                        <Button onClick={() =>modalSetter(false)} type="button" variant="contained" size="small" color="default" disabled disableElevation startIcon={<Cancel />}>
+                                            Cancel
+                                        </Button>
+                                    </>
+                                }
+                            </div>
+                        </Alert>
+
+                </Modal>
+
             </EmptyCardFlex>
         </EmptyCardFlex>
     )

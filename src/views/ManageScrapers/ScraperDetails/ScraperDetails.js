@@ -140,8 +140,6 @@ export default function ScraperDetails({pageTitle})  {
 
     const modalSetter = (value) => {
         setModalOpen(prev => value);
-
-        
     }
 
     useEffect(() => {

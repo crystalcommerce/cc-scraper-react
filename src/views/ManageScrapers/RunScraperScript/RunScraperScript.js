@@ -158,12 +158,14 @@ export default function RunScraperScript({pageTitle})  {
                 setScrapingMessage(data.message);
                 setScrapingStatus("success");
                 setFixingScript(false);
+                setFixScriptButtonEnabled(false);
             })
             .catch(err => {
                 setScrapingMessage(err.message);
                 setScrapingStatus("error");
                 setFixingScript(false);
-            })
+                setFixScriptButtonEnabled(false);
+            });
 
     }
 
@@ -224,11 +226,12 @@ export default function RunScraperScript({pageTitle})  {
     socket.off("script-initialization-error").on("script-initialization-error", function(data)  {
         // if(scriptId === data.scriptId)  {
         setScriptRunning(prev => false);
-        setScrapingMessage(prev => data.message);
+        
         setScrapingStatus(prev => "error");
         if(data.message.toLowerCase().includes("cannot find module"))   {
             setFixScriptButtonEnabled(true);
             console.log("fix must be enabled..");
+            setScrapingMessage(prev => "Some files that are necessary to run the scraper script, are missing; to fix this, please press the 'Automated Script Fix' button below.");
         }
         // }
     });
