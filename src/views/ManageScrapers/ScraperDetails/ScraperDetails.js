@@ -10,6 +10,7 @@ import useAccessCheck from "../../../hooks/useAccessCheck"
 import Card from "../../../components/Card";
 import EmptyCardFlex from "../../../components/EmptyCardFlex";
 import EditEvaluators from "../../../templates/EditEvaluators";
+import EditModelOptions from "../../../templates/EditModelOptions";
 import { Button, Divider, CircularProgress, Modal, FormControl } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import Cancel from '@material-ui/icons/Cancel';
@@ -38,6 +39,7 @@ export default function ScraperDetails({pageTitle})  {
 
         // edit evaluator functions
         [editingEvaluatorObjects, setEditingEvaluatorObjects] = useState(false),
+        [editingModelObjectOptions, setEditingModelObjectOptions] = useState(false),
         abortCont = new AbortController();
         
 
@@ -49,7 +51,56 @@ export default function ScraperDetails({pageTitle})  {
         setEditingEvaluatorObjects(prev =>true);
     }
 
-    const setEvaluatorObjectsHandler = (evaluatorObjects, state, setLoading, setMessage, setStatus) => {
+    const editModelObjectOptionsHandler = () => {
+        setEditingModelObjectOptions(prev =>true);
+    }
+
+    const setModelObjectOptionsHandler = (modelObjectOptions, state, setLoading, setMessage, setStatus) => {
+        setLoading(true);
+        setStatus("info");
+        setMessage("Updating the Evalutors");
+
+
+        fetch(`${baseUrl}/api/scrapers/${id}`, {
+            method : "PUT",
+            headers : {
+                "Content-type" : "application/json",
+                "x-auth-token" : authToken,
+            },
+            body : JSON.stringify({...scraperDetails, modelObjectOptions}),
+            signal : abortCont.signal,
+        })
+            .then(res => {
+                if(!res.ok) {
+                    throw Error("We had problems reaching the server... We couldn't update the DB Model Schema.");
+                }
+                return res.json();
+            })
+            .then(data => {
+                setLoading(false);
+                setStatus("success");
+                setMessage("We have successfully updated the DB Model Schema.");
+
+
+                setScraperDetails(prev => {
+                    return {
+                        ...prev,
+                        modelObjectOptions,
+                    }
+                });
+                setTimeout(() => setEditingModelObjectOptions(prev => state), 777);
+
+            })
+            .catch(err => {
+                if(err.name !== "AbortError")   {
+                    setLoading(false);
+                    setStatus("error");
+                    setMessage(err.message);
+                }
+            });
+    }
+
+    const setEvaluatorObjectsHandler = (evaluatorObjects, usage, groupIdentifierKey, state, setLoading, setMessage, setStatus) => {
         
         setLoading(true);
         setStatus("info");
@@ -62,7 +113,7 @@ export default function ScraperDetails({pageTitle})  {
                 "Content-type" : "application/json",
                 "x-auth-token" : authToken,
             },
-            body : JSON.stringify({...scraperDetails, evaluatorObjects}),
+            body : JSON.stringify({...scraperDetails, evaluatorObjects, usage, groupIdentifierKey}),
             signal : abortCont.signal,
         })
             .then(res => {
@@ -81,6 +132,8 @@ export default function ScraperDetails({pageTitle})  {
                     return {
                         ...prev,
                         evaluatorObjects,
+                        usage,
+                        groupIdentifierKey,
                     }
                 });
                 setTimeout(() => setEditingEvaluatorObjects(prev => state), 777);
@@ -99,7 +152,8 @@ export default function ScraperDetails({pageTitle})  {
     }
 
     const cancelHandler = () => {
-        setEditingEvaluatorObjects(prev => false)
+        setEditingEvaluatorObjects(prev => false);
+        setEditingModelObjectOptions(prev => false);
     }
 
     const deleteScriptHandler = () => {
@@ -153,16 +207,29 @@ export default function ScraperDetails({pageTitle})  {
             {
                 editingEvaluatorObjects && 
 
-                <Card>
+                <>
                     
-                    {scraperDetails && scraperDetails.evaluatorObjects && <EditEvaluators currentValue={scraperDetails.evaluatorObjects} setEvaluatorObjectsHandler={setEvaluatorObjectsHandler} cancelHandler={cancelHandler}></EditEvaluators>}
+                    {scraperDetails && scraperDetails.evaluatorObjects && <EditEvaluators currentValue={scraperDetails.evaluatorObjects} currentUsageValue={scraperDetails.usage} currentGroupIdentifierKeyValue={scraperDetails.groupIdentifierKey} currentSchema={scraperDetails.modelObjectOptions.schema} setEvaluatorObjectsHandler={setEvaluatorObjectsHandler} cancelHandler={cancelHandler}></EditEvaluators>}
 
-                </Card>
-
-
-
+                </>
             }
-            {!editingEvaluatorObjects && <Card>
+
+            {
+                editingModelObjectOptions && 
+
+                <>
+                    
+                    {scraperDetails && scraperDetails.modelObjectOptions && 
+                        <EditModelOptions currentValue={scraperDetails.modelObjectOptions} 
+                            setModelObjectHandler={setModelObjectOptionsHandler} 
+                            cancelHandler={cancelHandler}
+                        ></EditModelOptions>}
+
+                </>
+            }
+
+
+            {!editingEvaluatorObjects && !editingModelObjectOptions &&  <Card>
             <h1 className="page-title">{pageTitle}</h1>
                 {scraperDetails && 
                 <>
@@ -205,7 +272,7 @@ export default function ScraperDetails({pageTitle})  {
                                                     <div className={styles["label"]}>Callback : </div>
                                                     <FormControl>
                                                         {/* onChange, padding, value, style, placeholder */}
-                                                        <CodeEditor disabled value={item.callback}></CodeEditor>
+                                                        <CodeEditor style={{overflow : "auto"}} disabled value={item.callback}></CodeEditor>
                                                         {/* {schemaError && <p className={styles["error-message"]}>{schemaError}</p>} */}
                                                     </FormControl>
                                                 </li>
@@ -281,6 +348,10 @@ export default function ScraperDetails({pageTitle})  {
                     <Button onClick={editEvaluatorObjectsHandler} type="button" variant="contained" size="small" color="default" style={{backgroundColor : "rgb(85 177 201)", color : "white"}} disableElevation startIcon={<EditIcon />}>
                         Edit Evaluators
                     </Button>
+                    <Button onClick={editModelObjectOptionsHandler} type="button" variant="contained" size="small" color="default" style={{backgroundColor : "rgb(85 177 201)", color : "white"}} disableElevation startIcon={<EditIcon />}>
+                        Edit DB Model Schema
+                    </Button>
+
                     <Button onClick={executeScriptHandler} type="button" variant="contained" size="small" color="primary" disableElevation startIcon={<PlayIcon />} >
                             Run the Script
                     </Button>

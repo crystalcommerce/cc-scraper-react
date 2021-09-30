@@ -20,6 +20,11 @@ export default function CodeEditor2({onChange, padding, value, style, placeholde
                 border : "1px solid #dedede",
                 display : "grid",
                 gridAutoFlow : "row",
+                minWidth : "250px",
+                maxWidth : "100%",
+                wordWwrap: "break-word",
+                wordBreak:" break-all",
+                whiteSpace : "pre-wrap",
                 ...style
             }}
         />}
@@ -36,11 +41,14 @@ export default function CodeEditor2({onChange, padding, value, style, placeholde
                 color : "#333",
                 fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
                 minHeight : "500px",
+                border : "1px solid #dedede",
                 minWidth : "250px",
-                width : "100%",
+                maxWidth : "100%",
                 display : "grid",
                 gridAutoFlow : "row",
-                border : "1px solid #dedede",
+                wordWwrap: "break-word",
+                wordBreak:" break-all",
+                whiteSpace : "pre-wrap",
                 ...style
             }}
         />}

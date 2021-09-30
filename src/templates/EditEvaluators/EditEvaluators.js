@@ -20,7 +20,7 @@ import Alert from '@material-ui/lab/Alert';
 // styles
 import styles from "./EditEvaluators.module.scss";
 
-export default function EditEvaluators({currentValue, setEvaluatorObjectsHandler, cancelHandler})   {
+export default function EditEvaluators({currentValue, currentUsageValue, currentGroupIdentifierKeyValue, currentSchema, setEvaluatorObjectsHandler, cancelHandler})   {
 
     let radioOptions = [
             { value : "list", label : "List" },
@@ -64,7 +64,11 @@ export default function EditEvaluators({currentValue, setEvaluatorObjectsHandler
             [productUrlProp, setProductUrlProp] = useState(""),
             [productUrlPropError, setProductUrlPropError] = useState(false),
 
+        // devs comments
+        [usage, setUsage] = useState(currentUsageValue),
 
+        // groupIdentifierKey
+        [groupIdentifierKey, setGroupIdentifierKey] = useState(currentGroupIdentifierKeyValue),
 
         // Ajax status;
         [isLoading, setIsLoading] = useState(null),
@@ -168,6 +172,17 @@ export default function EditEvaluators({currentValue, setEvaluatorObjectsHandler
         setProductUrlProp(prev => e.target.value);
     }
 
+     // usage
+     const usageInputChangeHandler = (e) => {
+        setUsage(prev => e.target.value);
+    }
+
+
+     // groupIdentifierKey event hander
+    const groupIdentifierKeyPropChangeHandler = (value) => {
+        setGroupIdentifierKey(prev => value);
+    }
+
 
     /* **************************************************** */
     /* **************************************************** */
@@ -240,7 +255,7 @@ export default function EditEvaluators({currentValue, setEvaluatorObjectsHandler
     const submitHandler = (e) => {
         e.preventDefault();
         
-        setEvaluatorObjectsHandler(evaluatorObjects, false, setIsLoading, setMessage, setStatus);
+        setEvaluatorObjectsHandler(evaluatorObjects, usage, groupIdentifierKey, false, setIsLoading, setMessage, setStatus);
     }
 
     useEffect(() => {
@@ -532,7 +547,55 @@ export default function EditEvaluators({currentValue, setEvaluatorObjectsHandler
                     </div>
                     
 
+                    <Divider style={{margin : "1.4rem 0"}} />
 
+                    <div className={`${styles["form-container"]}`}>
+                        <div className={styles["input-container"]}>
+                            <div className={styles["input-container-2"]}>
+                                <div className={styles["field-container"]}>
+                                    <p className={styles["description"]}>This will be used to group the data into sets or maybe categories</p>
+                                    <div className={styles["field-container"]}>
+                                        <FormControl fullWidth>
+                                        <Select 
+                                            selectOnchangeHandler={groupIdentifierKeyPropChangeHandler} 
+                                            label="Product Group / Set Identifier Key" 
+                                            defaultValue={[{name : " -- Select a Property Name -- ", value : ""}, ...Object.keys(currentSchema).map((item, index) => {
+                                                return {
+                                                    name : item, value : item,
+                                                }
+                                            })].find(item => item["value"] === currentGroupIdentifierKeyValue)}
+                                            options={[{name : " -- Select a Property Name -- ", value : ""}, ...Object.keys(currentSchema).map((item, index) => {
+                                            return {
+                                                name : item, value : item,
+                                            }
+                                        })]} 
+                                            uniqueProp="value" 
+                                            optionLabelProp="name"
+                                            
+                                            />
+                                        </FormControl>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <Divider style={{margin : "1.4rem 0"}} />
+
+                            <div className={styles["input-container-2"]}>
+                                <div className={styles["field-container"]}>
+                                    <p className={styles["description"]}>Developer's comments in terms of Script Usage.</p>
+                                    <div className={styles["field-container"]}>
+                                        
+                                        <TextField 
+                                            value={usage}
+                                            multiline
+                                            onChange={usageInputChangeHandler}
+                                            fullWidth 
+                                            label="Usage" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>      
+                    </div>  
 
 
                     {/* // buttons */}
@@ -541,11 +604,15 @@ export default function EditEvaluators({currentValue, setEvaluatorObjectsHandler
                                 Cancel
                         </Button>
                         
-                        {submitButtonEnabled && <Button type="submit" variant="contained" size="small" color="primary" disableElevation startIcon={<SaveIcon />} >
+                        {submitButtonEnabled && !isLoading && <Button type="submit" variant="contained" size="small" color="primary" disableElevation startIcon={<SaveIcon />} >
                             Save
                         </Button>}
-                        {!submitButtonEnabled && <Button type="submit" variant="contained" size="small" color="primary" disabled disableElevation startIcon={<SaveIcon />} >
+                        {!submitButtonEnabled && !isLoading &&  <Button type="submit" variant="contained" size="small" color="primary" disabled disableElevation startIcon={<SaveIcon />} >
                             Save
+                        </Button>}
+
+                        {isLoading &&  <Button type="submit" variant="contained" size="small" color="primary" disabled disableElevation startIcon={<CircularProgress style={{height: "20px", width : "20px", color : "#777"}}></CircularProgress>} >
+                            Saving...
                         </Button>}
                         
                     </div>

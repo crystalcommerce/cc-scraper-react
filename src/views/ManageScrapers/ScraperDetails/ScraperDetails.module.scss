@@ -44,9 +44,10 @@
 .buttons-container  {
     margin-top : 2rem;
     display : flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
+    justify-content: flex-start;
+    gap : .7rem;
+    flex-wrap:wrap;
+    align-items: flex-start;
     padding : 0;
     width : 100%;
     & > *   {

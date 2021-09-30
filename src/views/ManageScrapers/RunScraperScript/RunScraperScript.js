@@ -211,15 +211,18 @@ export default function RunScraperScript({pageTitle})  {
 
     //script-initialization-ready
     socket.off("script-initialization-ready").on("script-initialization-ready", function(data)  {
-        setScriptId(prev => {
-            setScriptRunning(prev => true);
-            setScrapingStatus("info");
-            setScrapingMessage(`We are now scraping the data for ${productBrand} - ${groupIdentifier} from ${siteName}`);
-
-
-           return data.scriptId;
-        });
-        socket.emit("initialize", {status : 200, message : "Ready to scrape data."});
+        if(scriptRunning)   {
+            setScriptId(prev => {
+                setScriptRunning(prev => true);
+                setScrapingStatus("info");
+                setScrapingMessage(`We are now scraping the data for ${productBrand} - ${groupIdentifier} from ${siteName}`);
+    
+    
+               return data.scriptId;
+            });
+            socket.emit("initialize", {status : 200, message : "Ready to scrape data."});
+        }
+        
     });
 
     // Error
