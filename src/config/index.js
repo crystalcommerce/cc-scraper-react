@@ -7,14 +7,14 @@
 // http://ccscraperapp-env-1.eba-shgqnvwf.us-east-2.elasticbeanstalk.com/
 
 // combined local
-// export const baseUrl = "";
-// export const fileUrl = `${baseUrl}/cc-files/`;
-// export const socketUrl = `${baseUrl}`;
-
-// decoupled localhost
-export const baseUrl = "http://localhost:8080";
+export const baseUrl = "";
 export const fileUrl = `${baseUrl}/cc-files/`;
 export const socketUrl = `${baseUrl}`;
+
+// decoupled localhost
+// export const baseUrl = "http://localhost:8080";
+// export const fileUrl = `${baseUrl}/cc-files/`;
+// export const socketUrl = `${baseUrl}`;
 
 
 // decoupled = backend : production, frontend : local,

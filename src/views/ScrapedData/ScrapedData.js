@@ -39,6 +39,7 @@ export default function ManageScrapedData({pageTitle}) {
         // filtered data
         [filteredScrapers, setFilteredScrapers] = useState([]),
         [filteredProductSets, setFilteredProductSets] = useState([]),
+        [selectedProductBrand, setSelectedProductBrand] = useState(null),
         [siteResource, setSiteResource] = useState(null),
         [scraper, setScraper] = useState(null),
         [productSet, setProductSet] = useState(null),
@@ -83,6 +84,7 @@ export default function ManageScrapedData({pageTitle}) {
             return productSets.filter(item => item.productBrand === value)
         });
         setProductSet(prev => null);
+        
     }
 
     // productSet handler
@@ -312,7 +314,15 @@ export default function ManageScrapedData({pageTitle}) {
 
                     {filteredScrapers.length > 0 && productSets.length > 0 &&
                     <FormControl style={{width : "auto"}}>
-                        <Select value={scraper} selectOnchangeHandler={selectScraperHandler} label="Product Line / Brand" options={filteredScrapers} uniqueProp="productBrand" optionLabelProp="productBrand" ></Select>
+                        <Select value={scraper} selectOnchangeHandler={selectScraperHandler} label="Product Line / Brand" options={filteredScrapers.reduce((a, b) => {
+                            let notIncluded = a.every(item => {
+                                return item.productBrand !== b.productBrand;
+                            });
+                            if(notIncluded) {
+                                a.push(b);
+                            }
+                            return a;
+                        }, [])} uniqueProp="productBrand" optionLabelProp="productBrand" ></Select>
                     </FormControl>
                     }
 
