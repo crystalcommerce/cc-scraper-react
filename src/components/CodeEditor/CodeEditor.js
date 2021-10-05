@@ -1,4 +1,5 @@
 import CodeEditor from '@uiw/react-textarea-code-editor';
+import styles from "./CodeEditor.module.scss";
 
 export default function CodeEditor2({onChange, padding, value, style, placeholder, disabled}) {
   
@@ -10,7 +11,7 @@ export default function CodeEditor2({onChange, padding, value, style, placeholde
             placeholder={placeholder || "You can now write some JS code..."}
             onChange={onChange}
             padding={padding || 15}
-            
+            className={styles["code-editor"]}
             style={{
                 fontSize: 14,
                 backgroundColor: "#f5f5f5",
