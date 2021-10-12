@@ -211,7 +211,7 @@ export default function RunScraperScript({pageTitle})  {
 
     //script-initialization-ready
     socket.off("script-initialization-ready").on("script-initialization-ready", function(data)  {
-        if(scriptRunning)   {
+        if(scriptRunning && !scriptId)   {
             setScriptId(prev => {
                 setScriptRunning(prev => true);
                 setScrapingStatus("info");

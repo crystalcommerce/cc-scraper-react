@@ -97,8 +97,9 @@ export default function ManageScrapedData({pageTitle}) {
         if(scraper) {
             url += `${scraper.apiRoute}/`;
             if(productSet)  {
-                url += `all?${scraper.groupIdentifierKey}=${productSet.groupIdentifier}`;
+                url += `all?${scraper.groupIdentifierKey}=${encodeURIComponent(productSet.groupIdentifier)}`;
             }
+            console.log(url);
             return url;
         } else  {
             return null;
