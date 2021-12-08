@@ -23,6 +23,7 @@ export default function CreateModelSchema({currentValue, setModelObjectHandler, 
     let selectOptions = [
             { name : "String" },
             { name : "Array" },
+            { name : "Boolean" },
         ],
         radioOptions = [
             { value : "true", label : "True" },

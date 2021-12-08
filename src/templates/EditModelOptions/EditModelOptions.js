@@ -23,6 +23,7 @@ export default function EditModelSchema({currentValue, setModelObjectHandler, ca
     let selectOptions = [
             { name : "String" },
             { name : "Array" },
+            { name : "Boolean" },
         ],
         radioOptions = [
             { value : "true", label : "True" },
