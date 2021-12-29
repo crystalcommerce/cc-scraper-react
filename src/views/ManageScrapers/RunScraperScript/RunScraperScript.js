@@ -15,6 +15,7 @@ import Alert from '@material-ui/lab/Alert';
 import PlayIcon from '@material-ui/icons/PlayArrow';
 import DownloadIcon from '@material-ui/icons/GetApp';
 import SaveIcon from '@material-ui/icons/Save';
+import Cancel from '@material-ui/icons/Cancel';
 import EditIcon from '@material-ui/icons/Edit';
 import PreviousIcon from '@material-ui/icons/NavigateBefore';
 import MuiTable from "../../../components/MuiTable";
@@ -64,6 +65,7 @@ export default function RunScraperScript({pageTitle})  {
 
         // script state
         [scriptRunning, setScriptRunning] = useState(false),
+        [scrapingCanceled, setScrapingCanceled] = useState(false),
         [scrapingMessage, setScrapingMessage] = useState(null),
         [scrapingStatus, setScrapingStatus] = useState(null),
 
@@ -141,6 +143,30 @@ export default function RunScraperScript({pageTitle})  {
 
     }
 
+    const cancelHandler = () => {
+        fetch(`${baseUrl}/api/script/kill-script-processes/${scriptId}`, {
+            method : "GET",
+            headers : {
+                "Content-type" : "application/json",
+                "x-auth-token" : authToken,
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                setScrapingMessage("We are canceling the scraping process.");
+                setScrapingStatus("warning");
+                setFixingScript(false);
+                setFixScriptButtonEnabled(false);
+                setScrapingCanceled(true);
+            })
+            .catch(err => {
+                setScrapingMessage(err.message);
+                setScrapingStatus("error");
+                setFixingScript(false);
+                setFixScriptButtonEnabled(false);
+            });
+    }
+
     const scriptRewriteHandler = () => {
         setScrapingMessage("Currently fixing the script...");
         setScrapingStatus("info");
@@ -174,6 +200,7 @@ export default function RunScraperScript({pageTitle})  {
         setScriptRunning(prev => false);
         setScrapingMessage(prev => null);
         setScrapingStatus(prev => null);
+        setScrapingCanceled(prev => false);
 
         setScriptId(null);
 
@@ -316,7 +343,7 @@ export default function RunScraperScript({pageTitle})  {
 
     // scraping finished;
     socket.off("finished-scraping").on("finished-scraping", function(data)  {
-        if(scriptId === data.scriptId)  {
+        if(scriptId === data.scriptId && !scrapingCanceled)  {
             setScriptRunning(prev => false);
             setScrapingStatus("success");
             setScrapingMessage(`We have successfully scraped the data for ${productBrand} - ${groupIdentifier} from ${siteName}`);
@@ -326,6 +353,15 @@ export default function RunScraperScript({pageTitle})  {
             setScrapedData(data.data);
             setUnscrapedData(data.unscrapedData);
             
+        } else  {
+            setScriptRunning(prev => false);
+            setScrapingStatus("error");
+            setScrapingMessage(`We have canceled the scraping process for ${productBrand} - ${groupIdentifier} from ${siteName}`);
+
+
+            setCurrentProcess(prev => null);
+            setScrapedData(data.data);
+            setUnscrapedData(data.unscrapedData);
         }
     });
 
@@ -710,9 +746,26 @@ export default function RunScraperScript({pageTitle})  {
                                 Back
                             </Button>
                             {   
-                                !fixingScript && <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler} disabled disableElevation startIcon={<CircularProgress style={{height: "20px", width : "20px"}} color="secondary"  />}>
-                                    Executing the Script...
-                                </Button>
+                                !fixingScript && 
+                                <>
+                                    
+                                    {!scrapingCanceled && <>
+                                        <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler} disabled disableElevation startIcon={<CircularProgress style={{height: "20px", width : "20px"}} color="secondary"  />}>
+                                            Executing the Script...
+                                        </Button>
+                                        <Button type="button" variant="contained" size="small" color="primary" onClick={cancelHandler} startIcon={<Cancel />} disableElevation style={{ backgroundColor : "#cc5c5c", color : "white"}} >
+                                            Cancel Scraping Process.
+                                        </Button>
+                                    </>}
+                                    {scrapingCanceled && <>
+                                        <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler} disabled disableElevation startIcon={<PlayIcon />}>
+                                            Execute Script
+                                        </Button>
+                                        <Button type="button" variant="contained" size="small" color="primary" disabled onClick={cancelHandler} startIcon={<CircularProgress style={{height: "20px", width : "20px"}} color="secondary"  />} disableElevation >
+                                            Canceling the Scraping Process...
+                                        </Button>
+                                    </>}
+                                </>
                             }
                             {   
                                 fixingScript && <Button type="button" variant="contained" size="small" color="primary" onClick={runScraperScriptHandler} disabled disableElevation startIcon={<PlayIcon />}>
@@ -771,6 +824,7 @@ export default function RunScraperScript({pageTitle})  {
                     </Button>}
                     
                 </div>
+                
                 }
             </Card>
             

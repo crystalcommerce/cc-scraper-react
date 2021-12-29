@@ -89,4 +89,18 @@
         grid-auto-flow: row;
         padding : 2rem;
     }
+    
+    
+}
+
+
+
+@media only screen and (min-width: $mobile-min-width) and (max-width: $mobile-max-width) {
+    .buttons-container  {
+        display : grid;
+        gap : 1rem;
+        grid-auto-flow: dense ;
+    }
+    
+    
 }
